@@ -1550,6 +1550,8 @@ function saveGroups(g){ localStorage.setItem('akuma_groups_'+(currentUser?.name|
 const TITLE_ALIASES = {
   're:zero kara hajimeru isekai seikatsu': 're:zero',
   're:zero -starting life in another world-': 're:zero',
+  're:zero kara hajimeru kyuukei jikan [break time]': 're:zero',
+  're:zero kara hajimeru kyuukei jikan': 're:zero',
   'shingeki no kyojin': 'attack on titan',
   'kimetsu no yaiba': 'demon slayer',
   'boku no hero academia': 'my hero academia',
@@ -1567,16 +1569,26 @@ function getBaseName(title){
   let base = title
     .replace(/\s*(season|part|cour|s)\s*\d+/gi,'')
     .replace(/\s*\d+(st|nd|rd|th)\s*(season|part|cour)/gi,'')
-    // Only strip subtitles after " : " (space-colon-space) to avoid nuking Re:Zero, Steins;Gate etc
-    .replace(/\s+:\s+.+$/,'')
-    // Strip trailing dashes with content e.g. " -Starting Life in Another World-"
-    .replace(/\s+-[^-]+-\s*$/,'')
     .replace(/\s+(2nd|3rd|4th|5th)\s*(season|cour|part)?$/gi,'')
     .replace(/\s+(II|III|IV|V|VI|VII)\s*$/gi,'')
     .replace(/\s+\d+\s*$/g,'')
     .replace(/\s*[-:]\s*(the\s+movie|movie|film|ova|special)$/gi,'')
+    // Strip trailing arc/arc names e.g. "Entertainment District Arc"
+    .replace(/\s+\w[\w\s]*\s+arc\s*$/gi,'')
+    // Strip trailing dashes with content e.g. " -Starting Life in Another World-"
+    .replace(/\s+-[^-]+-\s*$/,'')
     .trim().toLowerCase();
-  // Apply alias map so JP/EN variants and spin-offs of the same show merge
+
+  // Strip subtitle after colon ONLY if the part before the colon is 2+ words
+  // This keeps "Re:Zero", "Steins;Gate" intact but strips "Demon Slayer: Kimetsu no Yaiba"
+  const colonIdx = base.indexOf(':');
+  if(colonIdx > 0){
+    const beforeColon = base.slice(0, colonIdx).trim();
+    if(beforeColon.includes(' ')){
+      base = beforeColon;
+    }
+  }
+
   return TITLE_ALIASES[base] || base || title.trim().toLowerCase();
 }
 
