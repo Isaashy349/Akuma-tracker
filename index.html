@@ -1226,7 +1226,9 @@ function bootUser(user){
   document.getElementById('userNameDisplay').textContent = user.name;
   const av = document.getElementById('userAvatar');
   av.textContent = user.name[0].toUpperCase();
-  updateSidebar(); renderGrid(); renderNotifPanel();
+  updateSidebar(); renderNotifPanel();
+  // Defer renderGrid so the DOM is fully visible before painting cards
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ renderGrid(); }); });
   checkAiringUpdates();
   showToast('Welcome back', user.name);
 }
@@ -1545,20 +1547,38 @@ function getGroups(){ try{ return JSON.parse(localStorage.getItem('akuma_groups_
 function saveGroups(g){ localStorage.setItem('akuma_groups_'+(currentUser?.name||''), JSON.stringify(g)); }
 
 // Auto-detect series by stripping season suffixes and comparing base titles
+// Known alias pairs: different titles that refer to the same series
+const TITLE_ALIASES = {
+  're:zero kara hajimeru isekai seikatsu': 're:zero -starting life in another world-',
+  'shingeki no kyojin': 'attack on titan',
+  'kimetsu no yaiba': 'demon slayer',
+  'boku no hero academia': 'my hero academia',
+  'sword art online alicization': 'sword art online',
+  'sword art online progressive': 'sword art online',
+  'fullmetal alchemist brotherhood': 'fullmetal alchemist',
+  'one punch man': 'one-punch man',
+  'mob psycho 100': 'mob psycho',
+  'steins gate 0': 'steins;gate',
+  'steins;gate 0': 'steins;gate',
+};
+
 function getBaseName(title){
-  return title
+  if(!title) return '';
+  let base = title
     .replace(/\s*(season|part|cour|s)\s*\d+/gi,'')
     .replace(/\s*\d+(st|nd|rd|th)\s*(season|part|cour)/gi,'')
-    // Common known sequel subtitle patterns
-    .replace(/:\s*(mugen\s*train|entertainment\s*district|swordsmith\s*village|hashira\s*training|infinity\s*castle|graduation\s*arc|training\s*arc)/gi,'')
-    // Strip "2", "II", "III", "IV", "2nd Season" etc at end
+    // Strip ALL subtitles after colon (catches Alicization, War of Underworld, etc)
+    .replace(/:\s*.+$/,'')
+    // Strip trailing dashes and content e.g. " -Starting Life in Another World-"
+    .replace(/\s+-[^-]+-\s*$/,'')
+    .replace(/\s+[-–]\s*.+$/, '')
     .replace(/\s+(2nd|3rd|4th|5th)\s*(season|cour|part)?$/gi,'')
     .replace(/\s+(II|III|IV|V|VI|VII)\s*$/gi,'')
     .replace(/\s+\d+\s*$/g,'')
-    // Strip ": Season X" style
-    .replace(/:\s*season\s*\d+/gi,'')
     .replace(/\s*[-:]\s*(the\s+movie|movie|film|ova|special)$/gi,'')
     .trim().toLowerCase();
+  // Apply alias map so JP/EN variants of the same show merge
+  return TITLE_ALIASES[base] || base || title.trim().toLowerCase();
 }
 
 function buildSeriesMap(){
@@ -1580,11 +1600,13 @@ function buildSeriesMap(){
   const baseMap = {};
   remaining.forEach(a=>{
     const base = getBaseName(a.title);
+    if(!base) return; // skip titles that reduce to nothing
     if(!baseMap[base]) baseMap[base]=[];
     baseMap[base].push(a.id);
   });
 
-  Object.values(baseMap).forEach(ids=>{
+  Object.entries(baseMap).forEach(([base, ids])=>{
+    if(!base) return;
     if(ids.length>1){
       ids.forEach(id=>used.add(id));
       series.push({ids, isGroup:true, manual:false});
@@ -2025,7 +2047,7 @@ function renderGrid(){
     ? list.length+' of '+totalInFilter+' anime'
     : list.length+' anime';
 
-  if(!list.length){
+  if(!list.length && !(currentFilter==='all' && animeList.length)){
     grid.innerHTML=`<div class="empty-state"><span class="empty-kanji">空</span><div class="empty-title">${listSearchQuery?'No results for "'+listSearchQuery+'"':'No anime here yet'}</div><div class="empty-sub">${listSearchQuery?'Try a different search term':'Use the search bar above to add anime'}</div></div>`;
     return;
   }
@@ -2052,6 +2074,8 @@ function renderGrid(){
     });
     // Safety net for anything missed
     list.filter(a=>!usedIds.has(a.id)).forEach(a=>{ html += renderSingleCard(a, idx++); });
+    // If seriesMap produced nothing but we have anime, fall back to flat render
+    if(!html && list.length) html = list.map((a,i)=>renderSingleCard(a,i)).join('');
     grid.innerHTML = html || '<div class="empty-state"><span class="empty-kanji">空</span><div class="empty-title">No anime here yet</div></div>';
     return;
   }
