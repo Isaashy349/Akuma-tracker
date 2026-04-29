@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AKUMA · Tracker v2</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg:#05050f; --bg2:#08081a; --surface:#0f0f22; --surface2:#14142a; --surface3:#1a1a35;
@@ -1019,15 +1020,21 @@ nav{
 ═══════════════════════════════════════ */
 const CLIENT_ID = 37632;
 const ANILIST   = 'https://graphql.anilist.co';
-// Implicit flow — AniList redirects back with #access_token=... in the URL
 const AUTH_URL = `https://anilist.co/api/v2/oauth/authorize?client_id=${CLIENT_ID}&response_type=token`;
 
 const STATUS_LABELS = {watching:'Watching',completed:'Completed',planned:'Plan to Watch',dropped:'Dropped',hold:'On Hold'};
 
 /* ═══════════════════════════════════════
-   USER / AUTH STATE
+   SUPABASE
 ═══════════════════════════════════════ */
-let currentUser  = null;   // { name, type:'local'|'anilist', token? }
+const SUPA_URL  = 'https://pkpkbplhmpqahrxzyeyh.supabase.co';
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrcGticGxobXBxYWhyeHp5ZXloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0Nzc4MjUsImV4cCI6MjA5MzA1MzgyNX0.XTzIgydRz6ckMRINW3zAQ-UOHt3we0mf3uEBcUDi3B4';
+const supa = supabase.createClient(SUPA_URL, SUPA_ANON);
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let currentUser  = null;
 let animeList    = [];
 let notifications= [];
 let currentFilter= 'all';
@@ -1035,28 +1042,83 @@ let currentSort  = 'added';
 let modalId      = null;
 let notifOpen    = false;
 
-// Multi-user local accounts stored under 'akuma_users'
-function getUsers(){ try{ return JSON.parse(localStorage.getItem('akuma_users'))||{}; } catch{ return {}; } }
-function saveUsers(u){ localStorage.setItem('akuma_users',JSON.stringify(u)); }
-function userKey(name){ return 'akuma_list_'+name; }
-function notifKey(name){ return 'akuma_notifs_'+name; }
-
-function loadUserList(name){
-  // Migrate old v1 data if this is first login
-  const key = userKey(name);
-  if(!localStorage.getItem(key)){
-    const old = localStorage.getItem('akuma_list_v2');
-    if(old) localStorage.setItem(key, old);
-  }
-  try{ return JSON.parse(localStorage.getItem(key))||[]; } catch{ return []; }
+/* ═══════════════════════════════════════
+   SUPABASE DATA FUNCTIONS
+═══════════════════════════════════════ */
+async function loadUserList(){
+  if(!currentUser) return [];
+  const { data, error } = await supa
+    .from('anime_list')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('updated_at', { ascending: false });
+  if(error){ console.error('Load list error', error); return []; }
+  return (data||[]).map(row=>({
+    id: row.anime_id,
+    title: row.title,
+    titleJp: row.title_jp,
+    cover: row.cover,
+    banner: row.banner,
+    status: row.status,
+    episodes: row.total_episodes || 0,
+    progress: row.episodes || 0,
+    myScore: row.my_score || 0,
+    aniScore: row.anilist_score || 0,
+    year: row.year,
+    studio: row.studio,
+    genres: row.genres || [],
+    notificationsEnabled: true,
+    lastKnownEps: row.total_episodes || 0,
+    addedAt: new Date(row.updated_at).getTime(),
+  }));
 }
-function saveUserList(){
+
+async function saveAnime(anime){
   if(!currentUser) return;
-  localStorage.setItem(userKey(currentUser.name), JSON.stringify(animeList));
+  const row = {
+    user_id: currentUser.id,
+    anime_id: anime.id,
+    title: anime.title,
+    title_jp: anime.titleJp || null,
+    cover: anime.cover || null,
+    banner: anime.banner || null,
+    status: anime.status,
+    episodes: anime.progress || 0,
+    total_episodes: anime.episodes || null,
+    my_score: anime.myScore || 0,
+    anilist_score: anime.aniScore || null,
+    year: anime.year || null,
+    studio: anime.studio || null,
+    genres: anime.genres || [],
+    updated_at: new Date().toISOString(),
+  };
+  const { error } = await supa.from('anime_list').upsert(row, { onConflict: 'user_id,anime_id' });
+  if(error) console.error('Save anime error', error);
+}
+
+async function deleteAnime(animeId){
+  if(!currentUser) return;
+  const { error } = await supa.from('anime_list')
+    .delete()
+    .eq('user_id', currentUser.id)
+    .eq('anime_id', animeId);
+  if(error) console.error('Delete anime error', error);
+}
+
+async function saveUserList(changedAnime=null){
+  if(!currentUser) return;
+  if(changedAnime){
+    // Fast path: only save the one that changed
+    await saveAnime(changedAnime);
+  } else {
+    // Full save (used on import)
+    await Promise.all(animeList.map(a => saveAnime(a)));
+  }
   updateSidebar(); renderGrid();
 }
-function loadUserNotifs(name){ try{ return JSON.parse(localStorage.getItem(notifKey(name)))||[]; } catch{ return []; } }
-function saveUserNotifs(){ if(!currentUser) return; localStorage.setItem(notifKey(currentUser.name),JSON.stringify(notifications)); }
+
+function loadUserNotifs(name){ try{ return JSON.parse(localStorage.getItem('akuma_notifs_'+name))||[]; } catch{ return []; } }
+function saveUserNotifs(){ if(!currentUser) return; localStorage.setItem('akuma_notifs_'+currentUser.name, JSON.stringify(notifications)); }
 
 /* ═══════════════════════════════════════
    SESSION RESTORE + OAUTH AUTO-LOGIN
@@ -1065,76 +1127,66 @@ function saveUserNotifs(){ if(!currentUser) return; localStorage.setItem(notifKe
 document.addEventListener('DOMContentLoaded', async function(){
 
   // 1. Check if AniList just redirected back with a token in the URL hash
-  //    URL looks like: https://yoursite.netlify.app/#access_token=TOKEN&token_type=Bearer
   const hash = window.location.hash;
   if(hash && hash.includes('access_token')){
     try{
       const params = new URLSearchParams(hash.startsWith('#') ? hash.slice(1) : hash);
       const token = params.get('access_token');
       if(token){
-        // Clean the ugly token from the address bar
         history.replaceState(null, '', window.location.pathname);
         const me = await anilistQuery('query{Viewer{name avatar{medium}}}', {}, token);
         if(me.data?.Viewer){
           const name = me.data.Viewer.name;
-          const users = getUsers();
-          users[name] = { type:'anilist', token };
-          saveUsers(users);
-          localStorage.setItem('akuma_current_session', JSON.stringify({name, type:'anilist', token}));
-          bootUser({name, type:'anilist', token});
-          importAniListList(token, name);
+          // Sign in to Supabase with AniList email-style account
+          await handleAniListSupabaseAuth(name, token);
           return;
         }
       }
     } catch(e){ console.error('OAuth token detection failed', e); }
   }
 
-  // 2. Restore saved session (keeps you logged in on refresh)
-  try{
-    const saved = localStorage.getItem('akuma_current_session');
-    if(saved){
-      const user = JSON.parse(saved);
-      if(user && user.name){
-        bootUser(user);
-        return;
-      }
-    }
-  } catch(e){}
+  // 2. Restore Supabase session
+  const { data: { session } } = await supa.auth.getSession();
+  if(session){
+    await bootFromSession(session);
+    return;
+  }
 
-  // 3. No session — show login screen (it's already visible by default)
+  // 3. No session — show login screen
 });
 
 /* ═══════════════════════════════════════
-   LOGIN — LOCAL
+   LOGIN — LOCAL (via Supabase Auth)
 ═══════════════════════════════════════ */
 function showRegister(){ document.getElementById('localLoginForm').style.display='none'; document.getElementById('localRegisterForm').style.display='block'; document.getElementById('anilistPinForm').style.display='none'; }
 function showLogin(){ document.getElementById('localLoginForm').style.display='block'; document.getElementById('localRegisterForm').style.display='none'; document.getElementById('anilistPinForm').style.display='none'; }
 
-function localRegister(){
+async function localRegister(){
   const u=document.getElementById('regUser').value.trim();
   const p=document.getElementById('regPass').value;
   const p2=document.getElementById('regPass2').value;
   if(!u||!p){ return showToast('Error','Please fill in all fields'); }
   if(p!==p2){ return showToast('Error','Passwords do not match'); }
-  const users=getUsers();
-  if(users[u]){ return showToast('Error','Username already taken'); }
-  // Simple hash (not cryptographically secure — fine for local storage)
-  users[u]={ hash: btoa(unescape(encodeURIComponent(p))), type:'local' };
-  saveUsers(users);
+  if(p.length < 6){ return showToast('Error','Password must be at least 6 characters'); }
+  // Use username@akuma.local as a fake email for Supabase Auth
+  const email = u.toLowerCase()+'@akuma.local';
+  const { data, error } = await supa.auth.signUp({ email, password: p });
+  if(error){ return showToast('Error', error.message); }
+  // Create profile row
+  const { error: pe } = await supa.from('profiles').insert({ id: data.user.id, username: u });
+  if(pe){ return showToast('Error', pe.message); }
   showToast('Account created','Welcome, '+u+'!');
-  showLogin();
-  document.getElementById('loginUser').value=u;
+  await bootFromSession(data.session);
 }
 
-function localLogin(){
+async function localLogin(){
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value;
   if(!u||!p){ return showToast('Error','Enter username and password'); }
-  const users=getUsers();
-  if(!users[u]){ return showToast('Error','No account found for "'+u+'"'); }
-  const expected = btoa(unescape(encodeURIComponent(p)));
-  if(users[u].hash!==expected){ return showToast('Error','Incorrect password'); }
-  bootUser({name:u,type:'local'});
+  const email = u.toLowerCase()+'@akuma.local';
+  const { data, error } = await supa.auth.signInWithPassword({ email, password: p });
+  if(error){ return showToast('Error','Incorrect username or password'); }
+  await bootFromSession(data.session);
 }
 
 /* ═══════════════════════════════════════
@@ -1146,15 +1198,30 @@ function startAniListAuth(){
 }
 
 function openAniListAuth(){
-  // Navigate directly rather than window.open to avoid popup blockers
   window.location.href = AUTH_URL;
+}
+
+async function handleAniListSupabaseAuth(name, token){
+  // Use anilist username as email for Supabase
+  const email = name.toLowerCase()+'@anilist.akuma';
+  const password = 'anilist_'+name+'_akuma2025';
+  // Try sign in first
+  let { data, error } = await supa.auth.signInWithPassword({ email, password });
+  if(error){
+    // Account doesn't exist yet — create it
+    const reg = await supa.auth.signUp({ email, password });
+    if(reg.error){ showToast('Error', reg.error.message); return; }
+    await supa.from('profiles').insert({ id: reg.data.user.id, username: name });
+    data = reg.data;
+  }
+  await bootFromSession(data.session, token);
+  importAniListList(token, name);
 }
 
 async function submitAniListPin(){
   const raw = document.getElementById('anilistPin').value.trim();
   if(!raw){ return showToast('Error','Paste the redirect URL from AniList'); }
 
-  // Extract token from URL fragment: ...#access_token=TOKEN&...
   let token = null;
   try{
     const str = raw.includes('#') ? raw.split('#')[1] : raw;
@@ -1162,21 +1229,14 @@ async function submitAniListPin(){
     token = params.get('access_token');
   } catch(e){}
 
-  // Fallback: maybe they pasted just the token directly
   if(!token && raw.length > 20 && !raw.includes(' ')) token = raw;
-
   if(!token){ return showToast('Error','Could not find token — paste the full address bar URL'); }
 
   showToast('Connecting…','Verifying with AniList');
   try{
     const me = await anilistQuery('query{Viewer{name avatar{medium}}}',{},token);
     if(!me.data?.Viewer) throw new Error('Invalid token');
-    const name = me.data.Viewer.name;
-    const users = getUsers();
-    users[name]={ type:'anilist', token };
-    saveUsers(users);
-    bootUser({name, type:'anilist', token});
-    importAniListList(token, name);
+    await handleAniListSupabaseAuth(me.data.Viewer.name, token);
   } catch(e){
     showToast('Auth failed','Could not connect — try copying the URL again');
   }
@@ -1214,27 +1274,29 @@ async function importAniListList(token, userName){
 /* ═══════════════════════════════════════
    BOOT
 ═══════════════════════════════════════ */
-function bootUser(user){
-  currentUser = user;
-  animeList   = loadUserList(user.name);
-  notifications = loadUserNotifs(user.name);
-  // Persist session so page reloads keep you logged in
-  localStorage.setItem('akuma_current_session', JSON.stringify(user));
+async function bootFromSession(session, anilistToken=null){
+  if(!session) return;
+  const uid = session.user.id;
+  // Get username from profiles table
+  const { data: profile } = await supa.from('profiles').select('username').eq('id', uid).single();
+  const name = profile?.username || session.user.email.split('@')[0];
+  currentUser = { id: uid, name, type: anilistToken ? 'anilist' : 'local', token: anilistToken };
+  // Load list from Supabase
+  animeList = await loadUserList();
+  notifications = loadUserNotifs(name);
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('appShell').style.display='block';
-  document.getElementById('userNameDisplay').textContent = user.name;
-  const av = document.getElementById('userAvatar');
-  av.textContent = user.name[0].toUpperCase();
+  document.getElementById('userNameDisplay').textContent = name;
+  document.getElementById('userAvatar').textContent = name[0].toUpperCase();
   updateSidebar(); renderNotifPanel();
-  // Defer renderGrid so the DOM is fully visible before painting cards
   requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ renderGrid(); }); });
   checkAiringUpdates();
-  showToast('Welcome back', user.name);
+  showToast('Welcome back', name);
 }
 
-function logout(){
+async function logout(){
   if(!confirm('Sign out?')) return;
-  localStorage.removeItem('akuma_current_session');
+  await supa.auth.signOut();
   currentUser=null; animeList=[]; notifications=[];
   document.getElementById('appShell').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
@@ -2138,7 +2200,8 @@ function removeAnime(id){
   const a=animeList.find(x=>x.id===id);
   if(!confirm('Remove "'+a?.title+'" from your list?')) return;
   animeList=animeList.filter(x=>x.id!==id);
-  saveUserList();
+  deleteAnime(id); // Remove from Supabase
+  updateSidebar(); renderGrid();
   showToast('Removed',''+a?.title);
 }
 
