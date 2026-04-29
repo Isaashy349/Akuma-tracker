@@ -1029,7 +1029,7 @@ const STATUS_LABELS = {watching:'Watching',completed:'Completed',planned:'Plan t
 ═══════════════════════════════════════ */
 const SUPA_URL  = 'https://pkpkbplhmpqahrxzyeyh.supabase.co';
 const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrcGticGxobXBxYWhyeHp5ZXloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0Nzc4MjUsImV4cCI6MjA5MzA1MzgyNX0.XTzIgydRz6ckMRINW3zAQ-UOHt3we0mf3uEBcUDi3B4';
-const supa = supabase.createClient(SUPA_URL, SUPA_ANON);
+const supa = window.supabase.createClient(SUPA_URL, SUPA_ANON);
 
 /* ═══════════════════════════════════════
    STATE
@@ -1126,33 +1126,40 @@ function saveUserNotifs(){ if(!currentUser) return; localStorage.setItem('akuma_
 ═══════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', async function(){
 
+  // Safety check — make sure Supabase loaded
+  if(!window.supabase){
+    console.error('Supabase failed to load');
+    return;
+  }
+
   // 1. Check if AniList just redirected back with a token in the URL hash
-  const hash = window.location.hash;
-  if(hash && hash.includes('access_token')){
+  //    Capture hash FIRST before any replaceState clears it
+  const rawHash = window.location.hash;
+  if(rawHash && rawHash.includes('access_token')){
     try{
-      const params = new URLSearchParams(hash.startsWith('#') ? hash.slice(1) : hash);
+      const params = new URLSearchParams(rawHash.startsWith('#') ? rawHash.slice(1) : rawHash);
       const token = params.get('access_token');
       if(token){
+        // Clean the URL *after* we've captured the token
         history.replaceState(null, '', window.location.pathname);
+        showToast('Connecting…', 'Verifying with AniList');
         const me = await anilistQuery('query{Viewer{name avatar{medium}}}', {}, token);
         if(me.data?.Viewer){
-          const name = me.data.Viewer.name;
-          // Sign in to Supabase with AniList email-style account
-          await handleAniListSupabaseAuth(name, token);
+          await handleAniListSupabaseAuth(me.data.Viewer.name, token);
           return;
         }
       }
     } catch(e){ console.error('OAuth token detection failed', e); }
   }
 
-  // 2. Restore Supabase session
+  // 2. Restore existing Supabase session (keeps you logged in across devices)
   const { data: { session } } = await supa.auth.getSession();
   if(session){
     await bootFromSession(session);
     return;
   }
 
-  // 3. No session — show login screen
+  // 3. No session — show login screen (already visible by default)
 });
 
 /* ═══════════════════════════════════════
@@ -1275,23 +1282,31 @@ async function importAniListList(token, userName){
    BOOT
 ═══════════════════════════════════════ */
 async function bootFromSession(session, anilistToken=null){
-  if(!session) return;
-  const uid = session.user.id;
-  // Get username from profiles table
-  const { data: profile } = await supa.from('profiles').select('username').eq('id', uid).single();
-  const name = profile?.username || session.user.email.split('@')[0];
-  currentUser = { id: uid, name, type: anilistToken ? 'anilist' : 'local', token: anilistToken };
-  // Load list from Supabase
-  animeList = await loadUserList();
-  notifications = loadUserNotifs(name);
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('appShell').style.display='block';
-  document.getElementById('userNameDisplay').textContent = name;
-  document.getElementById('userAvatar').textContent = name[0].toUpperCase();
-  updateSidebar(); renderNotifPanel();
-  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ renderGrid(); }); });
-  checkAiringUpdates();
-  showToast('Welcome back', name);
+  if(!session){ console.error('bootFromSession: no session'); return; }
+  try{
+    const uid = session.user.id;
+    // Get username from profiles table
+    const { data: profile, error: pe } = await supa.from('profiles').select('username').eq('id', uid).single();
+    if(pe) console.warn('Profile fetch warning:', pe.message);
+    // Clean username from email if profile missing
+    const emailName = session.user.email?.split('@')[0] || 'User';
+    const name = profile?.username || emailName;
+    currentUser = { id: uid, name, type: anilistToken ? 'anilist' : 'local', token: anilistToken };
+    // Load list from Supabase
+    animeList = await loadUserList();
+    notifications = loadUserNotifs(name);
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appShell').style.display='block';
+    document.getElementById('userNameDisplay').textContent = name;
+    document.getElementById('userAvatar').textContent = name[0].toUpperCase();
+    updateSidebar(); renderNotifPanel();
+    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ renderGrid(); }); });
+    checkAiringUpdates();
+    showToast('Welcome back', name);
+  } catch(e){
+    console.error('bootFromSession failed:', e);
+    showToast('Error', 'Failed to load your account — please try again');
+  }
 }
 
 async function logout(){
