@@ -3270,7 +3270,6 @@ async function saveProfileEdits(){
   document.documentElement.style.setProperty('--accent', accentHex);
 
   // Update display elements directly without full re-render
-  const bio = document.getElementById('profileBioInput').value.trim();
   document.getElementById('profileBio').textContent = bio;
   document.getElementById('profileBanner').style.background = `linear-gradient(135deg,${accentHex},#7b2fff)`;
   document.getElementById('profileAvatarLg').style.background = `linear-gradient(135deg,${accentHex},#7b2fff)`;
