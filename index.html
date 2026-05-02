@@ -3157,6 +3157,7 @@ async function loadAndRenderProfile(){
   document.getElementById('profileSwatches').innerHTML = ACCENT_COLOURS.map(c=>`
     <div class="colour-swatch ${c.hex===accent?'selected':''}"
       style="background:${c.hex}"
+      data-hex="${c.hex}"
       title="${c.name}"
       onclick="selectSwatch('${c.hex}',this)"></div>
   `).join('');
@@ -3245,7 +3246,7 @@ function toggleProfileEdit(){
 function selectSwatch(hex, el){
   document.querySelectorAll('.colour-swatch').forEach(s=>s.classList.remove('selected'));
   el.classList.add('selected');
-  el.dataset.selected = hex;
+  el.dataset.hex = hex;
   // Live preview
   document.getElementById('profileBanner').style.background = `linear-gradient(135deg,${hex},#7b2fff)`;
   document.getElementById('profileAvatarLg').style.background = `linear-gradient(135deg,${hex},#7b2fff)`;
@@ -3254,10 +3255,8 @@ function selectSwatch(hex, el){
 async function saveProfileEdits(){
   const bio = document.getElementById('profileBioInput').value.trim();
   const selectedSwatch = document.querySelector('.colour-swatch.selected');
-  const accent = selectedSwatch?.style.background || _profileData?.accent_colour || '#e8003d';
-  // Extract hex from inline style if needed
-  const hexMatch = accent.match(/#[0-9a-fA-F]{3,6}/);
-  const accentHex = hexMatch ? hexMatch[0] : '#e8003d';
+  // Read hex from data attribute set by selectSwatch, fall back to current profile
+  const accentHex = selectedSwatch?.dataset.hex || _profileData?.accent_colour || '#e8003d';
 
   const { error } = await supa.from('profiles')
     .update({ bio, accent_colour: accentHex })
