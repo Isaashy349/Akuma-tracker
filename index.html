@@ -431,13 +431,13 @@ nav{
 .friend-search-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.5rem .75rem;color:var(--text);font-size:.8rem;outline:none}
 .friend-search-input:focus{border-color:var(--accent)}
 .friend-search-btn{background:var(--accent);border:none;border-radius:6px;padding:.5rem .9rem;color:#fff;font-size:.75rem;font-family:'Bebas Neue',sans-serif;letter-spacing:.05em;cursor:pointer}
-.friend-item{display:flex;align-items:center;gap:.75rem;padding:.6rem .5rem;border-radius:6px;cursor:pointer;transition:background .15s}
+.friend-item{display:flex;align-items:center;gap:.75rem;padding:.6rem .5rem;border-radius:6px;transition:background .15s}
 .friend-item:hover{background:var(--surface2)}
 .friend-avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#fff;flex-shrink:0}
-.friend-info{flex:1;min-width:0}
-.friend-name{font-size:.85rem;font-weight:700}
+.friend-info{flex:1;min-width:0;overflow:hidden}
+.friend-name{font-size:.85rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .friend-meta{font-size:.72rem;color:var(--muted)}
-.friend-actions{display:flex;gap:.4rem}
+.friend-actions{display:flex;gap:.4rem;flex-shrink:0}
 .friend-btn{border:none;border-radius:4px;padding:.3rem .6rem;font-size:.7rem;cursor:pointer;font-family:'Space Mono',monospace}
 .friend-btn.accept{background:var(--green);color:#000}
 .friend-btn.decline{background:var(--surface3);color:var(--muted)}
@@ -2923,9 +2923,9 @@ async function renderFriends(){
             <div class="friend-name">${f.username}</div>
           </div>
           <div class="friend-actions">
-            <button class="friend-btn view" onclick="viewFriendList('${f.id}','${f.username}')">List</button>
-            <button class="friend-btn view" style="background:var(--purple)" onclick="compareLists('${f.id}','${f.username}')">Compare</button>
-            <button class="friend-btn remove" onclick="removeFriend(${f.friendshipId},'${f.username}')">✗</button>
+            <button class="friend-btn view" data-uid="${f.id}" data-name="${f.username}" onclick="viewFriendList(this.dataset.uid,this.dataset.name)">List</button>
+            <button class="friend-btn view" style="background:var(--purple)" data-uid="${f.id}" data-name="${f.username}" onclick="compareLists(this.dataset.uid,this.dataset.name)">Compare</button>
+            <button class="friend-btn remove" data-fid="${f.friendshipId}" data-name="${f.username}" onclick="removeFriend(this.dataset.fid,this.dataset.name)">✗</button>
           </div>
         </div>`).join('') : '<div style="color:var(--muted);font-size:.78rem">No friends yet — add someone above!</div>'}
       </div>
@@ -3239,8 +3239,10 @@ function switchProfileTab(tab, btn){
 
 function toggleProfileEdit(){
   _profileEditOpen = !_profileEditOpen;
-  document.getElementById('profileEditForm').style.display = _profileEditOpen ? 'block' : 'none';
-  document.getElementById('profileEditBtn').textContent = _profileEditOpen ? 'Cancel' : 'Edit Profile';
+  const form = document.getElementById('profileEditForm');
+  const btn = document.getElementById('profileEditBtn');
+  if(form) form.style.display = _profileEditOpen ? 'block' : 'none';
+  if(btn) btn.textContent = _profileEditOpen ? 'Cancel' : 'Edit Profile';
 }
 
 function selectSwatch(hex, el){
@@ -3267,9 +3269,16 @@ async function saveProfileEdits(){
   // Apply accent colour globally to CSS variable
   document.documentElement.style.setProperty('--accent', accentHex);
 
+  // Update display elements directly without full re-render
+  const bio = document.getElementById('profileBioInput').value.trim();
+  document.getElementById('profileBio').textContent = bio;
+  document.getElementById('profileBanner').style.background = `linear-gradient(135deg,${accentHex},#7b2fff)`;
+  document.getElementById('profileAvatarLg').style.background = `linear-gradient(135deg,${accentHex},#7b2fff)`;
+  if(_profileData) { _profileData.bio = bio; _profileData.accent_colour = accentHex; }
   showToast('Profile saved','Looking good!');
+  // Reset edit state cleanly
+  _profileEditOpen = true; // toggleProfileEdit will flip it to false
   toggleProfileEdit();
-  loadAndRenderProfile();
 }
 </script>
 </body>
