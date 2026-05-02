@@ -359,6 +359,70 @@ nav{
 }
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,0,61,.4)}50%{box-shadow:0 0 0 6px rgba(232,0,61,0)}}
 
+/* ── PROFILE MODAL ── */
+.profile-backdrop{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.profile-backdrop.open{opacity:1;pointer-events:all}
+.profile-modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:min(780px,95vw);max-height:90vh;overflow-y:auto;position:relative;transform:scale(.94) translateY(20px);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.profile-backdrop.open .profile-modal{transform:scale(1) translateY(0)}
+.profile-close{position:absolute;top:1rem;right:1rem;z-index:10;background:rgba(0,0,0,.5);border:1px solid var(--border);color:var(--muted);border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s}
+.profile-close:hover{color:var(--text);border-color:var(--accent)}
+.profile-banner{height:160px;background:linear-gradient(135deg,var(--accent),var(--purple));position:relative;border-radius:20px 20px 0 0;overflow:hidden}
+.profile-banner-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,var(--surface))}
+.profile-hero{display:flex;align-items:flex-end;gap:1.25rem;padding:0 1.5rem 1.25rem;margin-top:-48px;position:relative;z-index:1}
+.profile-avatar-lg{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));border:4px solid var(--surface);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:#fff;flex-shrink:0;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.profile-hero-info{flex:1;padding-bottom:.25rem}
+.profile-username{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.05em;line-height:1}
+.profile-joined{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);margin-top:.2rem}
+.profile-bio{font-size:.78rem;color:var(--muted);margin-top:.4rem;line-height:1.5;max-width:380px}
+.profile-edit-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:.45rem 1rem;font-family:'Space Mono',monospace;font-size:.65rem;cursor:pointer;transition:border-color .2s,color .2s;align-self:flex-end;margin-bottom:.25rem;flex-shrink:0}
+.profile-edit-btn:hover{border-color:var(--accent);color:var(--text)}
+.profile-edit-form{padding:0 1.5rem 1.25rem;border-bottom:1px solid var(--border)}
+.profile-edit-row{margin-bottom:.75rem}
+.profile-edit-label{display:block;font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);margin-bottom:.35rem;letter-spacing:.04em}
+.profile-edit-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.5rem .75rem;color:var(--text);font-size:.78rem;outline:none;resize:none;font-family:inherit;box-sizing:border-box}
+.profile-edit-input:focus{border-color:var(--accent)}
+.profile-colour-swatches{display:flex;gap:.5rem;flex-wrap:wrap}
+.colour-swatch{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s,border-color .15s}
+.colour-swatch:hover{transform:scale(1.2)}
+.colour-swatch.selected{border-color:#fff;transform:scale(1.15)}
+.profile-save-btn{background:var(--accent);border:none;border-radius:8px;padding:.5rem 1.25rem;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.05em;cursor:pointer;transition:opacity .2s}
+.profile-save-btn:hover{opacity:.85}
+.profile-stats-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.profile-stat{text-align:center;padding:.9rem .5rem;border-right:1px solid var(--border)}
+.profile-stat:last-child{border-right:none}
+.profile-stat-num{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.03em;color:var(--accent)}
+.profile-stat-label{font-family:'Space Mono',monospace;font-size:.55rem;color:var(--muted);letter-spacing:.04em;margin-top:.15rem}
+.profile-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 1.5rem}
+.profile-tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:'Space Mono',monospace;font-size:.65rem;padding:.75rem 1rem;cursor:pointer;transition:color .2s,border-color .2s;margin-bottom:-1px}
+.profile-tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.profile-tab-content{padding:1.25rem 1.5rem;min-height:180px}
+/* Favourites grid */
+.profile-fav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.75rem}
+.profile-fav-card{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:2/3;cursor:pointer;transition:transform .2s}
+.profile-fav-card:hover{transform:scale(1.04)}
+.profile-fav-card img{width:100%;height:100%;object-fit:cover}
+.profile-fav-score{position:absolute;bottom:0;left:0;right:0;padding:.3rem .4rem;background:linear-gradient(transparent,rgba(0,0,0,.8));font-family:'Space Mono',monospace;font-size:.55rem;color:var(--accent3)}
+/* Genres bar */
+.profile-genre-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem}
+.profile-genre-name{font-size:.75rem;width:120px;flex-shrink:0}
+.profile-genre-bar{flex:1;height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.profile-genre-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--purple))}
+.profile-genre-count{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted);width:24px;text-align:right}
+/* Score dist */
+.profile-score-bars{display:flex;align-items:flex-end;gap:.4rem;height:80px}
+.profile-score-col{display:flex;flex-direction:column;align-items:center;flex:1}
+.profile-score-bar{width:100%;border-radius:3px 3px 0 0;background:linear-gradient(to top,var(--accent),var(--accent3));min-height:3px;transition:height .4s}
+.profile-score-num{font-family:'Space Mono',monospace;font-size:.55rem;color:var(--muted);margin-top:.3rem}
+/* Recent list */
+.profile-recent-item{display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border)}
+.profile-recent-cover{width:36px;height:50px;object-fit:cover;border-radius:4px;flex-shrink:0}
+.profile-recent-info{flex:1;min-width:0}
+.profile-recent-title{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile-recent-meta{font-size:.68rem;color:var(--muted);margin-top:.15rem}
+/* Logout button inside profile */
+.profile-logout-btn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:.4rem .9rem;font-family:'Space Mono',monospace;font-size:.62rem;cursor:pointer;transition:border-color .2s,color .2s;margin-left:auto;display:block}
+.profile-logout-btn:hover{border-color:var(--accent);color:var(--accent)}
+
 /* ── FRIENDS TAB ── */
 .friends-layout{display:grid;grid-template-columns:320px 1fr;gap:1.5rem}
 .friends-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem}
@@ -882,12 +946,60 @@ nav{
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       <div class="notif-dot" id="notifDot"></div>
     </button>
-    <div class="user-chip" onclick="logout()">
+    <div class="user-chip" onclick="openProfileModal()">
       <div class="user-avatar" id="userAvatar">?</div>
       <span id="userNameDisplay">Guest</span>
     </div>
   </div>
 </nav>
+
+<!-- PROFILE MODAL -->
+<div class="profile-backdrop" id="profileBackdrop" onclick="closeProfile(event)">
+  <div class="profile-modal" id="profileModal">
+    <button class="profile-close" onclick="closeProfileModal()">✕</button>
+
+    <!-- Banner -->
+    <div class="profile-banner" id="profileBanner">
+      <div class="profile-banner-overlay"></div>
+    </div>
+
+    <!-- Avatar + name row -->
+    <div class="profile-hero">
+      <div class="profile-avatar-lg" id="profileAvatarLg">?</div>
+      <div class="profile-hero-info">
+        <div class="profile-username" id="profileUsername">—</div>
+        <div class="profile-joined" id="profileJoined"></div>
+        <div class="profile-bio" id="profileBio"></div>
+      </div>
+      <button class="profile-edit-btn" id="profileEditBtn" onclick="toggleProfileEdit()">Edit Profile</button>
+    </div>
+
+    <!-- Edit form (hidden by default) -->
+    <div class="profile-edit-form" id="profileEditForm" style="display:none">
+      <div class="profile-edit-row">
+        <label class="profile-edit-label">Bio</label>
+        <textarea class="profile-edit-input" id="profileBioInput" placeholder="Write something about yourself…" rows="2" maxlength="200"></textarea>
+      </div>
+      <div class="profile-edit-row">
+        <label class="profile-edit-label">Accent Colour</label>
+        <div class="profile-colour-swatches" id="profileSwatches"></div>
+      </div>
+      <button class="profile-save-btn" onclick="saveProfileEdits()">Save Changes</button>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="profile-stats-strip" id="profileStatsStrip"></div>
+
+    <!-- Content tabs -->
+    <div class="profile-tabs">
+      <button class="profile-tab active" onclick="switchProfileTab('fav',this)">Favourites</button>
+      <button class="profile-tab" onclick="switchProfileTab('recent',this)">Recent</button>
+      <button class="profile-tab" onclick="switchProfileTab('genres',this)">Genres</button>
+      <button class="profile-tab" onclick="switchProfileTab('scores',this)">Score Dist.</button>
+    </div>
+    <div class="profile-tab-content" id="profileTabContent"></div>
+  </div>
+</div>
 
 <!-- NOTIFICATION PANEL -->
 <div class="notif-panel" id="notifPanel">
@@ -1362,6 +1474,9 @@ async function bootFromSession(session, anilistToken=null){
     document.getElementById('appShell').style.display='block';
     document.getElementById('userNameDisplay').textContent = name;
     document.getElementById('userAvatar').textContent = name[0].toUpperCase();
+    // Restore saved accent colour
+    const { data: prof } = await supa.from('profiles').select('accent_colour').eq('id',uid).single();
+    if(prof?.accent_colour) document.documentElement.style.setProperty('--accent', prof.accent_colour);
     updateSidebar(); renderNotifPanel();
     requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ renderGrid(); }); });
     checkAiringUpdates();
@@ -2963,6 +3078,199 @@ async function compareLists(friendId, friendName){
         </div>`).join('')}
       </div>
     </div>`;
+}
+
+/* ═══════════════════════════════════════
+   PROFILE SYSTEM
+═══════════════════════════════════════ */
+const ACCENT_COLOURS = [
+  { hex:'#e8003d', name:'Akuma Red' },
+  { hex:'#ff6b35', name:'Ember' },
+  { hex:'#f7c948', name:'Gold' },
+  { hex:'#00e676', name:'Neon Green' },
+  { hex:'#00b4d8', name:'Cyan' },
+  { hex:'#7b2fff', name:'Violet' },
+  { hex:'#ff2d78', name:'Hot Pink' },
+  { hex:'#ffffff', name:'White' },
+];
+
+let _profileData = null; // cached profile from Supabase
+let _profileEditOpen = false;
+
+async function openProfileModal(){
+  document.getElementById('profileBackdrop').classList.add('open');
+  await loadAndRenderProfile();
+}
+
+function closeProfileModal(){
+  document.getElementById('profileBackdrop').classList.remove('open');
+}
+
+function closeProfile(e){
+  if(e.target === document.getElementById('profileBackdrop')) closeProfileModal();
+}
+
+async function loadAndRenderProfile(){
+  if(!currentUser) return;
+
+  // Fetch profile from Supabase
+  const { data: profile } = await supa.from('profiles')
+    .select('username,bio,accent_colour,avatar_url,joined_at')
+    .eq('id', currentUser.id).single();
+
+  _profileData = profile || {};
+  const name = _profileData.username || currentUser.name;
+  const bio = _profileData.bio || '';
+  const accent = _profileData.accent_colour || '#e8003d';
+  const joined = _profileData.joined_at ? new Date(_profileData.joined_at).toLocaleDateString('en-GB',{month:'long',year:'numeric'}) : '';
+
+  // Apply accent colour to banner
+  document.getElementById('profileBanner').style.background =
+    `linear-gradient(135deg, ${accent}, #7b2fff)`;
+  document.getElementById('profileAvatarLg').textContent = name[0].toUpperCase();
+  document.getElementById('profileAvatarLg').style.background =
+    `linear-gradient(135deg, ${accent}, #7b2fff)`;
+  document.getElementById('profileUsername').textContent = name;
+  document.getElementById('profileJoined').textContent = joined ? 'Joined '+joined : '';
+  document.getElementById('profileBio').textContent = bio;
+
+  // Stats strip
+  const total = animeList.length;
+  const completed = animeList.filter(a=>a.status==='completed').length;
+  const watching = animeList.filter(a=>a.status==='watching').length;
+  const totalEps = animeList.reduce((s,a)=>s+(a.progress||0),0);
+  const avgScore = (() => {
+    const scored = animeList.filter(a=>a.myScore>0);
+    return scored.length ? (scored.reduce((s,a)=>s+a.myScore,0)/scored.length).toFixed(1) : '—';
+  })();
+  const days = (totalEps * 24 / 60 / 24).toFixed(1);
+
+  document.getElementById('profileStatsStrip').innerHTML = `
+    <div class="profile-stat"><div class="profile-stat-num">${total}</div><div class="profile-stat-label">TOTAL</div></div>
+    <div class="profile-stat"><div class="profile-stat-num">${completed}</div><div class="profile-stat-label">COMPLETED</div></div>
+    <div class="profile-stat"><div class="profile-stat-num">${watching}</div><div class="profile-stat-label">WATCHING</div></div>
+    <div class="profile-stat"><div class="profile-stat-num">${totalEps}</div><div class="profile-stat-label">EPISODES</div></div>
+    <div class="profile-stat"><div class="profile-stat-num">${avgScore}</div><div class="profile-stat-label">AVG SCORE</div></div>
+  `;
+
+  // Colour swatches
+  document.getElementById('profileSwatches').innerHTML = ACCENT_COLOURS.map(c=>`
+    <div class="colour-swatch ${c.hex===accent?'selected':''}"
+      style="background:${c.hex}"
+      title="${c.name}"
+      onclick="selectSwatch('${c.hex}',this)"></div>
+  `).join('');
+
+  // Pre-fill edit form
+  document.getElementById('profileBioInput').value = bio;
+
+  // Logout button — add to bottom of hero if not already there
+  if(!document.getElementById('profileLogoutBtn')){
+    const btn = document.createElement('button');
+    btn.className='profile-logout-btn'; btn.id='profileLogoutBtn';
+    btn.textContent='Sign Out';
+    btn.onclick = ()=>{ closeProfileModal(); logout(); };
+    document.querySelector('.profile-hero').appendChild(btn);
+  }
+
+  // Default tab
+  switchProfileTab('fav', document.querySelector('.profile-tab'));
+}
+
+function switchProfileTab(tab, btn){
+  document.querySelectorAll('.profile-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const c = document.getElementById('profileTabContent');
+
+  if(tab==='fav'){
+    const top = [...animeList].filter(a=>a.myScore>0).sort((a,b)=>b.myScore-a.myScore).slice(0,12);
+    c.innerHTML = top.length ? `<div class="profile-fav-grid">${top.map(a=>`
+      <div class="profile-fav-card" title="${a.title}">
+        <img src="${a.cover||''}" onerror="this.style.background='var(--surface2)'">
+        <div class="profile-fav-score">★${a.myScore}</div>
+      </div>`).join('')}</div>`
+    : '<div style="color:var(--muted);font-size:.8rem">Rate some anime to see your favourites!</div>';
+  }
+
+  if(tab==='recent'){
+    const recent = [...animeList].sort((a,b)=>(b.addedAt||0)-(a.addedAt||0)).slice(0,15);
+    c.innerHTML = recent.map(a=>`
+      <div class="profile-recent-item">
+        <img class="profile-recent-cover" src="${a.cover||''}" onerror="this.style.background='var(--surface2)'">
+        <div class="profile-recent-info">
+          <div class="profile-recent-title">${a.title}</div>
+          <div class="profile-recent-meta">${STATUS_LABELS[a.status]||a.status} · EP ${a.progress||0}/${a.episodes||'?'} · ${a.year||''}</div>
+        </div>
+        ${a.myScore?`<span style="font-size:.75rem;color:var(--accent3)">★${a.myScore}</span>`:''}
+      </div>`).join('');
+  }
+
+  if(tab==='genres'){
+    const gMap = {};
+    animeList.forEach(a=>(a.genres||[]).forEach(g=>gMap[g]=(gMap[g]||0)+1));
+    const top = Object.entries(gMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const max = top[0]?.[1]||1;
+    c.innerHTML = top.map(([g,n])=>`
+      <div class="profile-genre-row">
+        <div class="profile-genre-name">${g}</div>
+        <div class="profile-genre-bar"><div class="profile-genre-fill" style="width:${n/max*100}%"></div></div>
+        <div class="profile-genre-count">${n}</div>
+      </div>`).join('') || '<div style="color:var(--muted);font-size:.8rem">No genre data yet</div>';
+  }
+
+  if(tab==='scores'){
+    const dist = Array(10).fill(0);
+    animeList.filter(a=>a.myScore>0).forEach(a=>dist[a.myScore-1]++);
+    const max = Math.max(...dist,1);
+    c.innerHTML = `
+      <div style="display:flex;align-items:flex-end;gap:.5rem;height:100px;padding-bottom:.5rem">
+        ${dist.map((n,i)=>`
+          <div class="profile-score-col">
+            <div class="profile-score-bar" style="height:${Math.max(3,n/max*80)}px;${n===0?'background:rgba(255,255,255,.07)':''}"></div>
+            <div class="profile-score-num">${i+1}</div>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:.5rem">
+        ${animeList.filter(a=>a.myScore>0).length} rated · most common: ${dist.indexOf(Math.max(...dist))+1}/10
+      </div>`;
+  }
+}
+
+function toggleProfileEdit(){
+  _profileEditOpen = !_profileEditOpen;
+  document.getElementById('profileEditForm').style.display = _profileEditOpen ? 'block' : 'none';
+  document.getElementById('profileEditBtn').textContent = _profileEditOpen ? 'Cancel' : 'Edit Profile';
+}
+
+function selectSwatch(hex, el){
+  document.querySelectorAll('.colour-swatch').forEach(s=>s.classList.remove('selected'));
+  el.classList.add('selected');
+  el.dataset.selected = hex;
+  // Live preview
+  document.getElementById('profileBanner').style.background = `linear-gradient(135deg,${hex},#7b2fff)`;
+  document.getElementById('profileAvatarLg').style.background = `linear-gradient(135deg,${hex},#7b2fff)`;
+}
+
+async function saveProfileEdits(){
+  const bio = document.getElementById('profileBioInput').value.trim();
+  const selectedSwatch = document.querySelector('.colour-swatch.selected');
+  const accent = selectedSwatch?.style.background || _profileData?.accent_colour || '#e8003d';
+  // Extract hex from inline style if needed
+  const hexMatch = accent.match(/#[0-9a-fA-F]{3,6}/);
+  const accentHex = hexMatch ? hexMatch[0] : '#e8003d';
+
+  const { error } = await supa.from('profiles')
+    .update({ bio, accent_colour: accentHex })
+    .eq('id', currentUser.id);
+
+  if(error){ return showToast('Error', error.message); }
+
+  // Apply accent colour globally to CSS variable
+  document.documentElement.style.setProperty('--accent', accentHex);
+
+  showToast('Profile saved','Looking good!');
+  toggleProfileEdit();
+  loadAndRenderProfile();
 }
 </script>
 </body>
