@@ -2980,9 +2980,8 @@ async function viewFriendList(friendId, friendName){
   const list = await getFriendList(friendId);
   const statusCounts = {};
   list.forEach(a=>{ statusCounts[a.status]=(statusCounts[a.status]||0)+1; });
-  const modal = document.getElementById('modal');
   const modalBody = document.getElementById('modalBody');
-  modal.style.display='flex';
+  document.getElementById('modalBackdrop').classList.add('open');
   modalBody.innerHTML = `
     <div class="friend-list-header">
       <div class="friend-list-avatar-lg">${friendName[0].toUpperCase()}</div>
@@ -3034,9 +3033,8 @@ async function compareLists(friendId, friendName){
   const onlyMe = myList.filter(a=>!friendIds.has(a.id));
   const onlyFriend = friendList.filter(a=>!myIds.has(a.id));
 
-  const modal = document.getElementById('modal');
   const modalBody = document.getElementById('modalBody');
-  modal.style.display='flex';
+  document.getElementById('modalBackdrop').classList.add('open');
   modalBody.innerHTML = `
     <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;margin-bottom:1.25rem">
       LIST <span style="color:var(--accent)">COMPARISON</span> · You vs ${friendName}
