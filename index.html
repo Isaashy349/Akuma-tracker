@@ -429,7 +429,7 @@ nav{
 .status-big-label{font-size:.62rem;color:var(--muted);font-family:'Space Mono',monospace}
 
 /* ── MODAL ── */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(6px)}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:700;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(6px)}
 .modal-backdrop.open{opacity:1;pointer-events:all}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:min(660px,95vw);max-height:85vh;overflow-y:auto;transform:scale(.94) translateY(20px);transition:transform .25s cubic-bezier(.34,1.56,.64,1);position:relative}
 .modal-backdrop.open .modal{transform:scale(1) translateY(0)}
@@ -699,8 +699,8 @@ nav{
   background:var(--surface);
   border:1px solid var(--border);
   border-radius:16px;
-  width:min(700px,95vw);
-  max-height:88vh;
+  width:min(860px,95vw);
+  max-height:92vh;
   overflow-y:auto;
   transform:scale(.94) translateY(20px);
   transition:transform .25s cubic-bezier(.34,1.56,.64,1);
@@ -754,27 +754,31 @@ nav{
 }
 .season-row:hover{border-color:rgba(232,0,61,.2)}
 .season-cover{
-  width:70px;height:100px;object-fit:cover;
+  width:90px;height:128px;object-fit:cover;
   flex-shrink:0;background:var(--surface3);
 }
-.season-info{flex:1;padding:.75rem .5rem .75rem 0;min-width:0;display:flex;flex-direction:column;gap:.3rem}
+.season-info{flex:1;padding:1rem .75rem 1rem 0;min-width:0;display:flex;flex-direction:column;gap:.4rem}
 .season-num{
-  font-family:'Bebas Neue',sans-serif;font-size:.75rem;letter-spacing:.08em;
+  font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:.08em;
   color:var(--accent);
 }
-.season-title{font-size:.8rem;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.season-meta{font-family:'Space Mono',monospace;font-size:.55rem;color:var(--muted)}
-.season-prog-row{display:flex;align-items:center;gap:.5rem}
-.season-prog-bar{flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.season-title{font-size:.9rem;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.season-meta{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted)}
 .season-prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));border-radius:2px}
-
 /* Season star rating */
-.season-stars{display:flex;gap:.15rem;align-items:center}
-.season-star{font-size:.75rem;cursor:pointer;color:rgba(255,255,255,.15);transition:color .12s,transform .12s;line-height:1}
+.season-stars{display:flex;gap:.2rem;align-items:center;flex-wrap:wrap}
+.season-star{font-size:1.1rem;cursor:pointer;color:rgba(255,255,255,.15);transition:color .12s,transform .12s;line-height:1}
 .season-star:hover,.season-star.lit{color:var(--accent3)}
-.season-star:hover{transform:scale(1.25)}
-
-.season-actions{display:flex;flex-direction:column;gap:.4rem;padding:.75rem;justify-content:center;flex-shrink:0}
+.season-star:hover{transform:scale(1.2)}
+.season-actions{display:flex;flex-direction:column;gap:.5rem;padding:1rem;justify-content:center;flex-shrink:0}
+/* Draggable progress slider */
+.prog-slider-wrap{flex:1;display:flex;align-items:center;gap:.5rem}
+.prog-slider{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:2px;background:rgba(255,255,255,.1);outline:none;cursor:pointer;accent-color:var(--accent)}
+.prog-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);cursor:grab;box-shadow:0 0 6px rgba(232,0,61,.5);transition:transform .15s,box-shadow .15s}
+.prog-slider::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1.35);box-shadow:0 0 14px rgba(232,0,61,.7)}
+.prog-slider::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--accent);cursor:grab;border:none;box-shadow:0 0 6px rgba(232,0,61,.5)}
+.prog-slider:disabled{opacity:.3;cursor:not-allowed}
+.season-prog-row{display:flex;align-items:center;gap:.5rem;margin:.2rem 0}
 .season-action-btn{
   font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.04em;
   background:var(--surface);border:1px solid var(--border);
@@ -1880,13 +1884,16 @@ function openSeasonModal(idsJson){
         <div class="season-title">${a.title}</div>
         <div class="season-meta">${a.episodes||'?'} eps · ${STATUS_LABELS[a.status]||a.status} · ${a.studio||'—'}</div>
         <div class="season-prog-row">
-          <div class="season-prog-bar"><div class="season-prog-fill" style="width:${pct}%"></div></div>
-          <span style="font-family:'Space Mono',monospace;font-size:.52rem;color:var(--muted)">EP ${a.progress}/${a.episodes||'?'}</span>
+          <input type="range" class="prog-slider" min="0" max="${a.episodes||0}" value="${a.progress}"
+            oninput="seasonProgressSlider(${a.id},this.value,this)"
+            onchange="seasonProgressSlider(${a.id},this.value,this)"
+            ${!a.episodes?'disabled':''}>
+          <span style="font-family:'Space Mono',monospace;font-size:.58rem;color:var(--muted);white-space:nowrap" id="sprogLabel_${a.id}">EP ${a.progress}/${a.episodes||'?'}</span>
         </div>
         <div class="season-stars">${stars}
-          <span style="font-family:'Space Mono',monospace;font-size:.55rem;color:var(--accent3);margin-left:.3rem">${a.myScore?'★'+a.myScore:''}</span>
+          <span style="font-family:'Space Mono',monospace;font-size:.62rem;color:var(--accent3);margin-left:.4rem">${a.myScore?'★'+a.myScore:''}</span>
         </div>
-        <select style="margin-top:.3rem;font-family:'Space Mono',monospace;font-size:.55rem;background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:.25rem .4rem;border-radius:4px;cursor:pointer;width:100%" onchange="seasonStatus(${a.id},this.value)">
+        <select style="margin-top:.4rem;font-family:'Space Mono',monospace;font-size:.6rem;background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:.3rem .5rem;border-radius:4px;cursor:pointer;width:100%" onchange="seasonStatus(${a.id},this.value)">
           ${['planned','watching','completed','hold','dropped'].map(s=>`<option value="${s}" ${a.status===s?'selected':''}>${STATUS_LABELS[s]}</option>`).join('')}
         </select>
       </div>
@@ -2106,8 +2113,10 @@ function renderSingleCard(a, i){
               <button class="ep-btn" onclick="quickProgress(${a.id},1)">+</button>
             </div>
           </div>
-          <div class="prog-bar" onclick="seekProgress(event,${a.id},${a.episodes||0})">
-            <div class="prog-fill" style="width:${pct}%"></div>
+          <div class="prog-slider-wrap">
+            <input type="range" class="prog-slider" min="0" max="${a.episodes||0}" value="${a.progress}"
+              oninput="sliderProgress(${a.id},this.value,this)"
+              ${!a.episodes?'disabled':''}>
           </div>
         </div>
         <div class="rating-wrap">
@@ -2164,8 +2173,10 @@ function renderSingleCard(a, i){
               <button class="ep-btn" onclick="quickProgress(${a.id},1)">+</button>
             </div>
           </div>
-          <div class="prog-bar" onclick="seekProgress(event,${a.id},${a.episodes||0})">
-            <div class="prog-fill" style="width:${pct}%"></div>
+          <div class="prog-slider-wrap">
+            <input type="range" class="prog-slider" min="0" max="${a.episodes||0}" value="${a.progress}"
+              oninput="sliderProgress(${a.id},this.value,this)"
+              ${!a.episodes?'disabled':''}>
           </div>
         </div>
         <div class="rating-wrap">
@@ -2269,6 +2280,26 @@ function seekProgress(e,id,total){
   const rect=e.currentTarget.getBoundingClientRect();
   a.progress=Math.round((e.clientX-rect.left)/rect.width*total);
   saveUserList();
+}
+function sliderProgress(id, val, el){
+  const a=animeList.find(x=>x.id===id); if(!a) return;
+  a.progress=parseInt(val);
+  if(a.progress===a.episodes && a.episodes>0){ a.status='completed'; }
+  // Update label without full re-render
+  const label = el.parentElement.nextElementSibling;
+  if(label) label.textContent='EP '+a.progress+'/'+(a.episodes||'?');
+  saveAnime(a);
+  updateSidebar();
+}
+function seasonProgressSlider(id, val, el){
+  const a=animeList.find(x=>x.id===id); if(!a) return;
+  a.progress=parseInt(val);
+  if(a.progress===a.episodes && a.episodes>0){ a.status='completed'; }
+  // Update label live
+  const label=document.getElementById('sprogLabel_'+id);
+  if(label) label.textContent='EP '+a.progress+'/'+(a.episodes||'?');
+  saveAnime(a);
+  updateSidebar();
 }
 function quickStatus(id,status){
   const a=animeList.find(x=>x.id===id); if(!a) return;
