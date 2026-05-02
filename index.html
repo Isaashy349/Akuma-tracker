@@ -359,6 +359,55 @@ nav{
 }
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,0,61,.4)}50%{box-shadow:0 0 0 6px rgba(232,0,61,0)}}
 
+/* ── FRIENDS TAB ── */
+.friends-layout{display:grid;grid-template-columns:320px 1fr;gap:1.5rem}
+.friends-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem}
+.friends-panel-title{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.08em;color:var(--muted);margin-bottom:1rem}
+.friend-search-row{display:flex;gap:.5rem;margin-bottom:1rem}
+.friend-search-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.5rem .75rem;color:var(--text);font-size:.8rem;outline:none}
+.friend-search-input:focus{border-color:var(--accent)}
+.friend-search-btn{background:var(--accent);border:none;border-radius:6px;padding:.5rem .9rem;color:#fff;font-size:.75rem;font-family:'Bebas Neue',sans-serif;letter-spacing:.05em;cursor:pointer}
+.friend-item{display:flex;align-items:center;gap:.75rem;padding:.6rem .5rem;border-radius:6px;cursor:pointer;transition:background .15s}
+.friend-item:hover{background:var(--surface2)}
+.friend-avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#fff;flex-shrink:0}
+.friend-info{flex:1;min-width:0}
+.friend-name{font-size:.85rem;font-weight:700}
+.friend-meta{font-size:.72rem;color:var(--muted)}
+.friend-actions{display:flex;gap:.4rem}
+.friend-btn{border:none;border-radius:4px;padding:.3rem .6rem;font-size:.7rem;cursor:pointer;font-family:'Space Mono',monospace}
+.friend-btn.accept{background:var(--green);color:#000}
+.friend-btn.decline{background:var(--surface3);color:var(--muted)}
+.friend-btn.remove{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.friend-btn.view{background:var(--blue);color:#fff}
+.pending-badge{background:var(--accent);color:#fff;border-radius:10px;font-size:.65rem;padding:.1rem .4rem;font-family:'Space Mono',monospace}
+/* Activity feed */
+.activity-feed{display:flex;flex-direction:column;gap:.75rem}
+.activity-item{display:flex;gap:.75rem;align-items:flex-start;padding:.75rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;transition:border-color .2s}
+.activity-item:hover{border-color:rgba(232,0,61,.2)}
+.activity-cover{width:40px;height:55px;object-fit:cover;border-radius:4px;flex-shrink:0}
+.activity-cover-placeholder{width:40px;height:55px;background:var(--surface2);border-radius:4px;flex-shrink:0}
+.activity-body{flex:1;min-width:0}
+.activity-who{font-size:.78rem;font-weight:700;margin-bottom:.2rem}
+.activity-who span{color:var(--accent)}
+.activity-what{font-size:.75rem;color:var(--muted);margin-bottom:.3rem}
+.activity-title{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.activity-time{font-size:.68rem;color:var(--muted);font-family:'Space Mono',monospace;margin-top:.3rem}
+.activity-badge{display:inline-block;padding:.15rem .45rem;border-radius:4px;font-size:.68rem;font-family:'Space Mono',monospace;margin-right:.3rem}
+.activity-badge.watching{background:rgba(0,153,255,.15);color:var(--blue)}
+.activity-badge.completed{background:rgba(0,230,118,.15);color:var(--green)}
+.activity-badge.dropped{background:rgba(232,0,61,.15);color:var(--accent)}
+.activity-badge.planned{background:rgba(170,0,255,.15);color:var(--purple)}
+.activity-badge.hold{background:rgba(255,154,0,.15);color:var(--accent3)}
+/* Compare modal */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-top:1rem}
+.compare-col{background:var(--surface2);border-radius:8px;padding:1rem}
+.compare-col-title{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.05em;margin-bottom:.75rem;text-align:center}
+.compare-anime-item{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;border-bottom:1px solid var(--border);font-size:.75rem}
+.compare-anime-item img{width:28px;height:38px;object-fit:cover;border-radius:3px;flex-shrink:0}
+/* Friend list view modal */
+.friend-list-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+.friend-list-avatar-lg{width:54px;height:54px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#fff}
+
 /* ── STATS TAB ── */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem}
@@ -817,6 +866,7 @@ nav{
     <button class="nav-tab" onclick="switchTab('airing',this)">Airing</button>
     <button class="nav-tab" onclick="switchTab('categories',this)">Categories</button>
     <button class="nav-tab" onclick="switchTab('stats',this)">Stats</button>
+    <button class="nav-tab" onclick="switchTab('friends',this)">Friends</button>
   </div>
   <div class="nav-right">
     <div class="search-wrap">
@@ -981,6 +1031,14 @@ nav{
         <div class="section-title">MY <span>STATS</span></div>
       </div>
       <div id="statsContent"></div>
+    </div>
+
+    <!-- FRIENDS TAB -->
+    <div id="tabFriends" style="display:none">
+      <div class="section-header">
+        <div class="section-title">FRIENDS <span>&amp; ACTIVITY</span></div>
+      </div>
+      <div id="friendsContent"></div>
     </div>
 
   </main>
@@ -2477,12 +2535,13 @@ function updateSidebar(){
 function switchTab(tab,btn){
   document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  ['tabList','tabWatch','tabAiring','tabCategories','tabStats'].forEach(id=>document.getElementById(id).style.display='none');
+  ['tabList','tabWatch','tabAiring','tabCategories','tabStats','tabFriends'].forEach(id=>document.getElementById(id).style.display='none');
   if(tab==='list'){document.getElementById('tabList').style.display='block';renderGrid();}
   if(tab==='watch'){document.getElementById('tabWatch').style.display='block';renderWatch();}
   if(tab==='airing'){document.getElementById('tabAiring').style.display='block';renderAiring();}
   if(tab==='categories'){document.getElementById('tabCategories').style.display='block';renderCategories();}
   if(tab==='stats'){document.getElementById('tabStats').style.display='block';renderStats();}
+  if(tab==='friends'){document.getElementById('tabFriends').style.display='block';renderFriends();}
 }
 function filterStatus(status,btn){
   currentFilter=status;
@@ -2519,6 +2578,329 @@ document.addEventListener('keydown',e=>{
     searchInput.focus();e.preventDefault();
   }
 });
+
+/* ═══════════════════════════════════════
+   FRIENDS SYSTEM
+═══════════════════════════════════════ */
+
+// ── Supabase helpers ──────────────────────
+async function getFriends(){
+  if(!currentUser) return [];
+  const { data } = await supa.from('friendships')
+    .select('*, requester:requester_id(id,username), addressee:addressee_id(id,username)')
+    .or(`requester_id.eq.${currentUser.id},addressee_id.eq.${currentUser.id}`)
+    .eq('status','accepted');
+  return (data||[]).map(f=>{
+    const friend = f.requester.id === currentUser.id ? f.addressee : f.requester;
+    return { ...friend, friendshipId: f.id };
+  });
+}
+
+async function getPendingRequests(){
+  if(!currentUser) return { incoming:[], outgoing:[] };
+  const { data } = await supa.from('friendships')
+    .select('*, requester:requester_id(id,username), addressee:addressee_id(id,username)')
+    .or(`requester_id.eq.${currentUser.id},addressee_id.eq.${currentUser.id}`)
+    .eq('status','pending');
+  const incoming = (data||[]).filter(f=>f.addressee_id===currentUser.id).map(f=>({...f.requester, friendshipId:f.id}));
+  const outgoing = (data||[]).filter(f=>f.requester_id===currentUser.id).map(f=>({...f.addressee, friendshipId:f.id}));
+  return { incoming, outgoing };
+}
+
+async function sendFriendRequest(username){
+  // Find user by username
+  const { data: profile, error } = await supa.from('profiles').select('id,username').eq('username', username).single();
+  if(error || !profile){ return showToast('Error','User "'+username+'" not found'); }
+  if(profile.id === currentUser.id){ return showToast('Error','You cannot add yourself'); }
+  // Check not already friends/pending
+  const { data: existing } = await supa.from('friendships')
+    .select('id,status')
+    .or(`and(requester_id.eq.${currentUser.id},addressee_id.eq.${profile.id}),and(requester_id.eq.${profile.id},addressee_id.eq.${currentUser.id})`)
+    .single();
+  if(existing){
+    if(existing.status==='accepted') return showToast('Info','Already friends!');
+    if(existing.status==='pending') return showToast('Info','Request already sent');
+  }
+  const { error: ie } = await supa.from('friendships').insert({ requester_id: currentUser.id, addressee_id: profile.id });
+  if(ie){ return showToast('Error', ie.message); }
+  showToast('Request sent','Friend request sent to '+profile.username);
+  renderFriends();
+}
+
+async function acceptRequest(friendshipId){
+  await supa.from('friendships').update({ status:'accepted', updated_at: new Date().toISOString() }).eq('id', friendshipId);
+  showToast('Friends!','Friend request accepted');
+  renderFriends();
+}
+
+async function declineRequest(friendshipId){
+  await supa.from('friendships').delete().eq('id', friendshipId);
+  renderFriends();
+}
+
+async function removeFriend(friendshipId, name){
+  if(!confirm('Remove '+name+' from friends?')) return;
+  await supa.from('friendships').delete().eq('id', friendshipId);
+  showToast('Removed', name+' removed from friends');
+  renderFriends();
+}
+
+async function getActivityFeed(){
+  if(!currentUser) return [];
+  const { data } = await supa.from('activity')
+    .select('*, user:user_id(username)')
+    .order('created_at', { ascending: false })
+    .limit(50);
+  return data || [];
+}
+
+async function logActivity(type, anime){
+  if(!currentUser) return;
+  await supa.from('activity').insert({
+    user_id: currentUser.id,
+    type,
+    anime_id: anime?.id || null,
+    anime_title: anime?.title || null,
+    anime_cover: anime?.cover || null,
+    data: anime ? { score: anime.myScore, progress: anime.progress, status: anime.status } : null,
+  });
+}
+
+async function getFriendList(userId){
+  const { data } = await supa.from('anime_list').select('*').eq('user_id', userId).order('updated_at', { ascending: false });
+  return (data||[]).map(row=>({
+    id: row.anime_id, title: row.title, cover: row.cover,
+    status: row.status, progress: row.episodes, episodes: row.total_episodes,
+    myScore: row.my_score, year: row.year,
+  }));
+}
+
+// ── Log activity on saves ──────────────────
+const _origSaveAnime = saveAnime;
+saveAnime = async function(anime){
+  await _origSaveAnime(anime);
+  logActivity(anime.status, anime);
+};
+
+// ── Render ──────────────────────────────
+async function renderFriends(){
+  const fc = document.getElementById('friendsContent');
+  fc.innerHTML = '<div style="color:var(--muted);font-size:.8rem;padding:2rem">Loading…</div>';
+
+  const [friends, pending, feed] = await Promise.all([getFriends(), getPendingRequests(), getActivityFeed()]);
+
+  fc.innerHTML = `
+  <div class="friends-layout">
+    <!-- LEFT: Friends panel -->
+    <div>
+      <!-- Add friend -->
+      <div class="friends-panel" style="margin-bottom:1rem">
+        <div class="friends-panel-title">ADD FRIEND</div>
+        <div class="friend-search-row">
+          <input class="friend-search-input" id="friendSearchInput" placeholder="Enter username…" onkeydown="if(event.key==='Enter')doAddFriend()">
+          <button class="friend-search-btn" onclick="doAddFriend()">ADD</button>
+        </div>
+      </div>
+
+      ${pending.incoming.length ? `
+      <!-- Incoming requests -->
+      <div class="friends-panel" style="margin-bottom:1rem">
+        <div class="friends-panel-title">INCOMING REQUESTS <span class="pending-badge">${pending.incoming.length}</span></div>
+        ${pending.incoming.map(f=>`
+        <div class="friend-item">
+          <div class="friend-avatar">${f.username[0].toUpperCase()}</div>
+          <div class="friend-info">
+            <div class="friend-name">${f.username}</div>
+            <div class="friend-meta">wants to be friends</div>
+          </div>
+          <div class="friend-actions">
+            <button class="friend-btn accept" onclick="acceptRequest(${f.friendshipId})">✓</button>
+            <button class="friend-btn decline" onclick="declineRequest(${f.friendshipId})">✗</button>
+          </div>
+        </div>`).join('')}
+      </div>` : ''}
+
+      ${pending.outgoing.length ? `
+      <!-- Outgoing requests -->
+      <div class="friends-panel" style="margin-bottom:1rem">
+        <div class="friends-panel-title">SENT REQUESTS</div>
+        ${pending.outgoing.map(f=>`
+        <div class="friend-item">
+          <div class="friend-avatar" style="background:var(--muted)">${f.username[0].toUpperCase()}</div>
+          <div class="friend-info">
+            <div class="friend-name">${f.username}</div>
+            <div class="friend-meta">pending…</div>
+          </div>
+          <button class="friend-btn decline" onclick="declineRequest(${f.friendshipId})">Cancel</button>
+        </div>`).join('')}
+      </div>` : ''}
+
+      <!-- Friends list -->
+      <div class="friends-panel">
+        <div class="friends-panel-title">FRIENDS ${friends.length ? `(${friends.length})` : ''}</div>
+        ${friends.length ? friends.map(f=>`
+        <div class="friend-item">
+          <div class="friend-avatar">${f.username[0].toUpperCase()}</div>
+          <div class="friend-info">
+            <div class="friend-name">${f.username}</div>
+          </div>
+          <div class="friend-actions">
+            <button class="friend-btn view" onclick="viewFriendList('${f.id}','${f.username}')">List</button>
+            <button class="friend-btn view" style="background:var(--purple)" onclick="compareLists('${f.id}','${f.username}')">Compare</button>
+            <button class="friend-btn remove" onclick="removeFriend(${f.friendshipId},'${f.username}')">✗</button>
+          </div>
+        </div>`).join('') : '<div style="color:var(--muted);font-size:.78rem">No friends yet — add someone above!</div>'}
+      </div>
+    </div>
+
+    <!-- RIGHT: Activity feed -->
+    <div>
+      <div class="friends-panel">
+        <div class="friends-panel-title">ACTIVITY FEED</div>
+        ${feed.length ? `<div class="activity-feed">${feed.map(a=>renderActivityItem(a)).join('')}</div>`
+          : '<div style="color:var(--muted);font-size:.78rem">No activity yet. Add friends and start watching!</div>'}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderActivityItem(a){
+  const typeLabels = { watching:'started watching', completed:'completed', dropped:'dropped', planned:'added to plan to watch', hold:'put on hold', score:'rated', added:'added', progress:'updated progress on' };
+  const label = typeLabels[a.type] || a.type;
+  const time = timeAgo(new Date(a.created_at));
+  const isMe = a.user_id === currentUser.id;
+  const who = isMe ? 'You' : a.user?.username || 'Someone';
+  return `<div class="activity-item">
+    ${a.anime_cover ? `<img class="activity-cover" src="${a.anime_cover}" onerror="this.style.display='none'">` : '<div class="activity-cover-placeholder"></div>'}
+    <div class="activity-body">
+      <div class="activity-who"><span>${who}</span> ${label}</div>
+      <div class="activity-title">${a.anime_title||'Unknown'}</div>
+      ${a.data?.score ? `<div style="margin-top:.3rem;font-size:.72rem;color:var(--accent3)">★ ${a.data.score}/10</div>` : ''}
+      <div class="activity-time">${time}</div>
+    </div>
+    ${a.data?.status ? `<span class="activity-badge ${a.data.status}">${STATUS_LABELS[a.data.status]||a.data.status}</span>` : ''}
+  </div>`;
+}
+
+function timeAgo(date){
+  const s = Math.floor((Date.now()-date)/1000);
+  if(s<60) return 'just now';
+  if(s<3600) return Math.floor(s/60)+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+
+function doAddFriend(){
+  const val = document.getElementById('friendSearchInput').value.trim();
+  if(!val) return;
+  sendFriendRequest(val);
+  document.getElementById('friendSearchInput').value='';
+}
+
+// ── Friend list viewer ──────────────────
+async function viewFriendList(friendId, friendName){
+  const list = await getFriendList(friendId);
+  const statusCounts = {};
+  list.forEach(a=>{ statusCounts[a.status]=(statusCounts[a.status]||0)+1; });
+  const modal = document.getElementById('modal');
+  const modalBody = document.getElementById('modalBody');
+  modal.style.display='flex';
+  modalBody.innerHTML = `
+    <div class="friend-list-header">
+      <div class="friend-list-avatar-lg">${friendName[0].toUpperCase()}</div>
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem">${friendName}'s <span style="color:var(--accent)">LIST</span></div>
+        <div style="font-size:.75rem;color:var(--muted)">${list.length} anime · ${statusCounts.completed||0} completed · ${statusCounts.watching||0} watching</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem">
+      ${Object.entries(STATUS_LABELS).map(([k,v])=>`
+        <button class="filter-pill ${k==='watching'?'active':''}" onclick="filterFriendView('${k}',this)" style="font-size:.72rem">${v} (${statusCounts[k]||0})</button>
+      `).join('')}
+    </div>
+    <div id="friendListGrid" class="anime-grid">
+      ${renderFriendCards(list, 'watching')}
+    </div>`;
+  window._friendListAll = list;
+}
+
+function filterFriendView(status, btn){
+  document.querySelectorAll('#modalBody .filter-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('friendListGrid').innerHTML = renderFriendCards(window._friendListAll, status);
+}
+
+function renderFriendCards(list, status){
+  const filtered = list.filter(a=>a.status===status);
+  if(!filtered.length) return '<div style="color:var(--muted);font-size:.8rem;padding:1rem">Nothing here</div>';
+  return filtered.map(a=>`
+    <div class="anime-card">
+      <div class="card-cover-wrap">
+        <img class="card-cover" src="${a.cover||''}" onerror="this.src=''">
+        <div class="card-status-badge ${a.status}">${STATUS_LABELS[a.status]||a.status}</div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">${a.title}</div>
+        <div class="card-meta">${a.year||''} · ${a.episodes||'?'} eps</div>
+        ${a.myScore ? `<div style="color:var(--accent3);font-size:.75rem">★ ${a.myScore}/10</div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+// ── Compare lists ──────────────────────
+async function compareLists(friendId, friendName){
+  const [myList, friendList] = await Promise.all([Promise.resolve(animeList), getFriendList(friendId)]);
+  const myIds = new Set(myList.map(a=>a.id));
+  const friendIds = new Set(friendList.map(a=>a.id));
+  const both = myList.filter(a=>friendIds.has(a.id));
+  const onlyMe = myList.filter(a=>!friendIds.has(a.id));
+  const onlyFriend = friendList.filter(a=>!myIds.has(a.id));
+
+  const modal = document.getElementById('modal');
+  const modalBody = document.getElementById('modalBody');
+  modal.style.display='flex';
+  modalBody.innerHTML = `
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;margin-bottom:1.25rem">
+      LIST <span style="color:var(--accent)">COMPARISON</span> · You vs ${friendName}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem;text-align:center">
+      <div style="background:var(--surface2);border-radius:8px;padding:.75rem">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--green)">${both.length}</div>
+        <div style="font-size:.72rem;color:var(--muted)">IN COMMON</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:.75rem">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--blue)">${onlyMe.length}</div>
+        <div style="font-size:.72rem;color:var(--muted)">ONLY YOU</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:.75rem">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--purple)">${onlyFriend.length}</div>
+        <div style="font-size:.72rem;color:var(--muted)">ONLY ${friendName.toUpperCase()}</div>
+      </div>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-col">
+        <div class="compare-col-title" style="color:var(--green)">IN COMMON (${both.length})</div>
+        ${both.slice(0,30).map(a=>`<div class="compare-anime-item">
+          ${a.cover?`<img src="${a.cover}" style="width:28px;height:38px;object-fit:cover;border-radius:3px">` : ''}
+          <span>${a.title}</span>
+        </div>`).join('')}
+      </div>
+      <div class="compare-col">
+        <div class="compare-col-title" style="color:var(--blue)">ONLY YOU (${onlyMe.length})</div>
+        ${onlyMe.slice(0,30).map(a=>`<div class="compare-anime-item">
+          ${a.cover?`<img src="${a.cover}" style="width:28px;height:38px;object-fit:cover;border-radius:3px">` : ''}
+          <span>${a.title}</span>
+        </div>`).join('')}
+      </div>
+      <div class="compare-col">
+        <div class="compare-col-title" style="color:var(--purple)">ONLY ${friendName.toUpperCase()} (${onlyFriend.length})</div>
+        ${onlyFriend.slice(0,30).map(a=>`<div class="compare-anime-item">
+          ${a.cover?`<img src="${a.cover}" style="width:28px;height:38px;object-fit:cover;border-radius:3px">` : ''}
+          <span>${a.title}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
 </script>
 </body>
 </html>
