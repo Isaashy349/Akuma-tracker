@@ -773,11 +773,12 @@ nav{
 .season-actions{display:flex;flex-direction:column;gap:.5rem;padding:1rem;justify-content:center;flex-shrink:0}
 /* Draggable progress slider */
 .prog-slider-wrap{flex:1;display:flex;align-items:center;gap:.5rem}
-.prog-slider{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:2px;background:rgba(255,255,255,.1);outline:none;cursor:pointer;accent-color:var(--accent)}
+.prog-slider{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:2px;outline:none;cursor:pointer}
 .prog-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);cursor:grab;box-shadow:0 0 6px rgba(232,0,61,.5);transition:transform .15s,box-shadow .15s}
 .prog-slider::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1.35);box-shadow:0 0 14px rgba(232,0,61,.7)}
 .prog-slider::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--accent);cursor:grab;border:none;box-shadow:0 0 6px rgba(232,0,61,.5)}
 .prog-slider:disabled{opacity:.3;cursor:not-allowed}
+.slider-ep-label{font-family:'Space Mono',monospace;font-size:.55rem;color:var(--muted);white-space:nowrap;flex-shrink:0}
 .season-prog-row{display:flex;align-items:center;gap:.5rem;margin:.2rem 0}
 .season-action-btn{
   font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.04em;
@@ -1886,7 +1887,7 @@ function openSeasonModal(idsJson){
         <div class="season-prog-row">
           <input type="range" class="prog-slider" min="0" max="${a.episodes||0}" value="${a.progress}"
             oninput="seasonProgressSlider(${a.id},this.value,this)"
-            onchange="seasonProgressSlider(${a.id},this.value,this)"
+            style="background:linear-gradient(to right,var(--accent) ${a.episodes?Math.round(a.progress/a.episodes*100):0}%,rgba(255,255,255,.1) ${a.episodes?Math.round(a.progress/a.episodes*100):0}%)"
             ${!a.episodes?'disabled':''}>
           <span style="font-family:'Space Mono',monospace;font-size:.58rem;color:var(--muted);white-space:nowrap" id="sprogLabel_${a.id}">EP ${a.progress}/${a.episodes||'?'}</span>
         </div>
@@ -2116,7 +2117,9 @@ function renderSingleCard(a, i){
           <div class="prog-slider-wrap">
             <input type="range" class="prog-slider" min="0" max="${a.episodes||0}" value="${a.progress}"
               oninput="sliderProgress(${a.id},this.value,this)"
+              style="background:linear-gradient(to right,var(--accent) ${a.episodes?Math.round(a.progress/a.episodes*100):0}%,rgba(255,255,255,.1) ${a.episodes?Math.round(a.progress/a.episodes*100):0}%)"
               ${!a.episodes?'disabled':''}>
+            <span class="slider-ep-label">EP ${a.progress}/${a.episodes||'?'}</span>
           </div>
         </div>
         <div class="rating-wrap">
@@ -2176,7 +2179,9 @@ function renderSingleCard(a, i){
           <div class="prog-slider-wrap">
             <input type="range" class="prog-slider" min="0" max="${a.episodes||0}" value="${a.progress}"
               oninput="sliderProgress(${a.id},this.value,this)"
+              style="background:linear-gradient(to right,var(--accent) ${a.episodes?Math.round(a.progress/a.episodes*100):0}%,rgba(255,255,255,.1) ${a.episodes?Math.round(a.progress/a.episodes*100):0}%)"
               ${!a.episodes?'disabled':''}>
+            <span class="slider-ep-label">EP ${a.progress}/${a.episodes||'?'}</span>
           </div>
         </div>
         <div class="rating-wrap">
@@ -2281,25 +2286,44 @@ function seekProgress(e,id,total){
   a.progress=Math.round((e.clientX-rect.left)/rect.width*total);
   saveUserList();
 }
+// Debounce timer for slider saves
+const _sliderTimers = {};
+function _debounceSliderSave(id, fn, delay=400){
+  clearTimeout(_sliderTimers[id]);
+  _sliderTimers[id] = setTimeout(fn, delay);
+}
+
+function updateSliderTrail(el){
+  const pct = el.max > 0 ? (el.value / el.max) * 100 : 0;
+  el.style.background = `linear-gradient(to right, var(--accent) ${pct}%, rgba(255,255,255,.1) ${pct}%)`;
+}
+
 function sliderProgress(id, val, el){
   const a=animeList.find(x=>x.id===id); if(!a) return;
   a.progress=parseInt(val);
-  if(a.progress===a.episodes && a.episodes>0){ a.status='completed'; }
-  // Update label without full re-render
-  const label = el.parentElement.nextElementSibling;
+  // Update trail immediately
+  updateSliderTrail(el);
+  // Update ep label immediately
+  const label = el.closest('.prog-slider-wrap')?.querySelector('.slider-ep-label');
   if(label) label.textContent='EP '+a.progress+'/'+(a.episodes||'?');
-  saveAnime(a);
-  updateSidebar();
+  // Debounce the actual save so it only fires when user stops dragging
+  _debounceSliderSave(id, ()=>{
+    if(a.progress===a.episodes && a.episodes>0){ a.status='completed'; }
+    saveAnime(a);
+    updateSidebar();
+  });
 }
 function seasonProgressSlider(id, val, el){
   const a=animeList.find(x=>x.id===id); if(!a) return;
   a.progress=parseInt(val);
-  if(a.progress===a.episodes && a.episodes>0){ a.status='completed'; }
-  // Update label live
+  updateSliderTrail(el);
   const label=document.getElementById('sprogLabel_'+id);
   if(label) label.textContent='EP '+a.progress+'/'+(a.episodes||'?');
-  saveAnime(a);
-  updateSidebar();
+  _debounceSliderSave('season_'+id, ()=>{
+    if(a.progress===a.episodes && a.episodes>0){ a.status='completed'; }
+    saveAnime(a);
+    updateSidebar();
+  });
 }
 function quickStatus(id,status){
   const a=animeList.find(x=>x.id===id); if(!a) return;
