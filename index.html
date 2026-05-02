@@ -1727,14 +1727,15 @@ function getBaseName(title){
   return TITLE_ALIASES[base] || base || title.trim().toLowerCase();
 }
 
-function buildSeriesMap(){
+function buildSeriesMap(sourceList){
+  const list = sourceList || animeList;
   const groups = getGroups();
   const used = new Set();
   const series = []; // [{ids:[], isGroup:true}, ...]
 
   // First apply manual groups
   Object.values(groups).forEach(ids=>{
-    const members = ids.filter(id=>animeList.some(a=>a.id===id));
+    const members = ids.filter(id=>list.some(a=>a.id===id));
     if(members.length>1){
       members.forEach(id=>used.add(id));
       series.push({ids:members, isGroup:true, manual:true});
@@ -1742,11 +1743,11 @@ function buildSeriesMap(){
   });
 
   // Auto-group remaining by base name
-  const remaining = animeList.filter(a=>!used.has(a.id));
+  const remaining = list.filter(a=>!used.has(a.id));
   const baseMap = {};
   remaining.forEach(a=>{
     const base = getBaseName(a.title);
-    if(!base) return; // skip titles that reduce to nothing
+    if(!base) return;
     if(!baseMap[base]) baseMap[base]=[];
     baseMap[base].push(a.id);
   });
@@ -2200,28 +2201,35 @@ function renderGrid(){
 
   // Build series groups or flat list
   if(!listSearchQuery && currentFilter==='all'){
-    const seriesMap = buildSeriesMap();
+    // Apply sort to animeList before building series map
+    let sorted = [...animeList];
+    if(currentSort==='title')    sorted.sort((a,b)=>a.title.localeCompare(b.title));
+    if(currentSort==='score')    sorted.sort((a,b)=>b.myScore-a.myScore);
+    if(currentSort==='aniScore') sorted.sort((a,b)=>b.aniScore-a.aniScore);
+    if(currentSort==='progress') sorted.sort((a,b)=>{ const pa=a.episodes?a.progress/a.episodes:0; const pb=b.episodes?b.progress/b.episodes:0; return pb-pa; });
+    if(currentSort==='added')    sorted.sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
+
+    const seriesMap = buildSeriesMap(sorted);
     const usedIds = new Set();
     let html = '';
     let idx = 0;
     seriesMap.forEach(entry=>{
       if(entry.isGroup){
-        const members = entry.ids.filter(id=>list.some(a=>a.id===id));
+        const members = entry.ids.filter(id=>sorted.some(a=>a.id===id));
         if(!members.length) return;
         members.forEach(id=>usedIds.add(id));
         html += renderStackCard({...entry, ids:members}, idx++);
       } else {
-        const a = animeList.find(x=>x.id===entry.ids[0]);
+        const a = sorted.find(x=>x.id===entry.ids[0]);
         if(a && !usedIds.has(a.id)){
           usedIds.add(a.id);
           html += renderSingleCard(a, idx++);
         }
       }
     });
-    // Safety net for anything missed
-    list.filter(a=>!usedIds.has(a.id)).forEach(a=>{ html += renderSingleCard(a, idx++); });
-    // If seriesMap produced nothing but we have anime, fall back to flat render
-    if(!html && list.length) html = list.map((a,i)=>renderSingleCard(a,i)).join('');
+    // Safety net for anything missed — maintain sort order
+    sorted.filter(a=>!usedIds.has(a.id)).forEach(a=>{ html += renderSingleCard(a, idx++); });
+    if(!html && sorted.length) html = sorted.map((a,i)=>renderSingleCard(a,i)).join('');
     grid.innerHTML = html || '<div class="empty-state"><span class="empty-kanji">空</span><div class="empty-title">No anime here yet</div></div>';
     return;
   }
