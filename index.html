@@ -201,12 +201,16 @@ nav{
   display:flex;align-items:center;gap:.65rem;width:100%;padding:.55rem 1.1rem;
   background:none;border:none;color:var(--muted);cursor:pointer;
   font-family:'Noto Sans JP',sans-serif;font-size:.78rem;
-  transition:color .2s,background .2s;text-align:left;
+  transition:color .2s,background .2s,transform .2s,padding-left .2s;text-align:left;
+  border-left:2px solid transparent;
 }
-.status-btn:hover{color:var(--text);background:var(--surface)}
-.status-btn.active{color:var(--text);background:var(--surface);border-left:2px solid var(--accent)}
-.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.status-count{margin-left:auto;font-family:'Space Mono',monospace;font-size:.58rem;color:var(--muted);background:var(--surface2);padding:.1rem .35rem;border-radius:8px}
+.status-btn:hover{color:var(--text);background:var(--surface);transform:translateX(3px)}
+.status-btn.active{color:var(--text);background:var(--surface);border-left:2px solid var(--accent);padding-left:1.3rem}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:transform .2s}
+.status-btn:hover .status-dot{transform:scale(1.3)}
+.status-btn.active .status-dot{transform:scale(1.2)}
+.status-count{margin-left:auto;font-family:'Space Mono',monospace;font-size:.58rem;color:var(--muted);background:var(--surface2);padding:.1rem .35rem;border-radius:8px;transition:color .2s,background .2s}
+.status-btn.active .status-count{color:var(--text);background:var(--surface3)}
 .sidebar-section{margin-bottom:1.5rem}
 .score-ring-wrap{display:flex;flex-direction:column;align-items:center;padding:.85rem;border:1px solid var(--border);border-radius:10px;margin:.5rem 1.1rem 1rem;background:var(--surface)}
 .score-ring-label{font-family:'Space Mono',monospace;font-size:.56rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:.6rem}
@@ -246,16 +250,17 @@ nav{
 .tracker-card{
   background:var(--surface);border:1px solid var(--border);border-radius:10px;
   overflow:hidden;position:relative;
-  transition:transform .25s ease,box-shadow .25s ease,border-color .25s;
+  animation:fadeUp .35s cubic-bezier(.34,1.2,.64,1) both;
+  transition:transform .28s cubic-bezier(.34,1.2,.64,1),box-shadow .28s ease,border-color .28s ease;
 }
-.tracker-card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.6),0 0 0 1px rgba(232,0,61,.2);border-color:rgba(232,0,61,.2)}
+.tracker-card:hover{transform:translateY(-6px) scale(1.01);box-shadow:0 20px 44px rgba(0,0,0,.6),0 0 0 1px rgba(232,0,61,.25),0 0 20px rgba(232,0,61,.07);border-color:rgba(232,0,61,.3)}
 .card-cover-wrap{position:relative;aspect-ratio:2/3;overflow:hidden}
-.card-cover{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease;background:var(--surface2)}
-.tracker-card:hover .card-cover{transform:scale(1.06)}
+.card-cover{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s cubic-bezier(.34,1.1,.64,1);background:var(--surface2)}
+.tracker-card:hover .card-cover{transform:scale(1.07)}
 .status-ribbon{position:absolute;top:.5rem;left:0;font-family:'Space Mono',monospace;font-size:.5rem;font-weight:700;letter-spacing:.07em;padding:.18rem .6rem .18rem .5rem;border-radius:0 3px 3px 0;text-transform:uppercase}
 .score-badge{position:absolute;top:.5rem;right:.5rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:.08rem .4rem;display:flex;align-items:center;gap:.15rem}
 .score-star{color:var(--accent3);font-size:.65rem}
-.card-actions{position:absolute;bottom:0;left:0;right:0;display:flex;background:rgba(5,5,15,.93);border-top:1px solid var(--border);transform:translateY(100%);transition:transform .25s ease}
+.card-actions{position:absolute;bottom:0;left:0;right:0;display:flex;background:rgba(5,5,15,.93);border-top:1px solid var(--border);transform:translateY(100%);transition:transform .28s cubic-bezier(.34,1.2,.64,1)}
 .tracker-card:hover .card-actions{transform:translateY(0)}
 .action-btn{flex:1;padding:.55rem .2rem;background:none;border:none;border-right:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:.6rem;font-family:'Space Mono',monospace;letter-spacing:.03em;transition:color .15s,background .15s;display:flex;flex-direction:column;align-items:center;gap:.18rem}
 .action-btn:last-child{border-right:none}
@@ -592,7 +597,7 @@ nav{
 .modal-remove-btn:hover{color:var(--accent);border-color:var(--accent)}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:1.25rem;right:1.25rem;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:6px;padding:.75rem 1rem;font-family:'Space Mono',monospace;font-size:.62rem;z-index:999;transform:translateX(130%);transition:transform .3s cubic-bezier(.34,1.56,.64,1);max-width:250px}
+.toast{position:fixed;bottom:1.25rem;right:1.25rem;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:.75rem 1rem;font-family:'Space Mono',monospace;font-size:.62rem;z-index:999;transform:translateX(130%);transition:transform .4s cubic-bezier(.34,1.4,.64,1),opacity .3s;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .toast.show{transform:translateX(0)}
 .toast-title{color:var(--text);margin-bottom:.12rem;font-weight:700}
 .toast-msg{color:var(--muted);font-size:.58rem}
@@ -606,8 +611,37 @@ nav{
 /* Spinner */
 .spinner{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite;margin:1.25rem auto}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-.tracker-card{animation:fadeUp .3s ease forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.series-stack{animation:fadeUp .35s cubic-bezier(.34,1.2,.64,1) both}
+/* Tab content fade */
+.tab-content-enter{animation:fadeUp .28s cubic-bezier(.34,1.1,.64,1) both}
+/* Sidebar status items */
+.status-btn{transition:color .2s,background .2s,transform .15s}
+.status-btn:hover{transform:translateX(3px)}
+.status-btn.active{transform:translateX(4px)}
+/* Nav tab transitions */
+.nav-tab{transition:color .18s,background .18s,border-color .18s,transform .15s}
+.nav-tab:hover{transform:translateY(-1px)}
+.nav-tab.active{transform:translateY(0)}
+/* Card hover lift */
+/* Section header slide in */
+.section-header{animation:slideInLeft .3s cubic-bezier(.34,1.1,.64,1) both}
+/* Friends/watchlist panels */
+.friends-panel{animation:scaleIn .25s cubic-bezier(.34,1.1,.64,1) both}
+.watchlist-item{transition:background .15s,border-color .2s,transform .15s}
+.watchlist-item:hover{transform:translateX(3px)}
+/* Activity items */
+.activity-item{animation:fadeUp .3s cubic-bezier(.34,1.1,.64,1) both}
+/* Skeleton shimmer for loading states */
+.skeleton{background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+/* Toast animation */
+@keyframes toastIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(100%)}}
 
 /* Status colours */
 .s-watching{background:rgba(0,153,255,.15);color:#0099ff}
@@ -1764,7 +1798,7 @@ function renderWatch(){
   grid.innerHTML = list.map((a,i)=>{
     const pct = a.episodes ? Math.round(a.progress/a.episodes*100) : 0;
     const nextEp = Math.min(a.progress+1, a.episodes||9999);
-    return `<div class="watch-card" style="animation-delay:${i*.025}s">
+    return `<div class="watch-card" style="animation-delay:${Math.min(i,.020)*0.025}s">
       <img class="watch-cover" src="${a.cover||''}" alt="${a.title}" loading="lazy" onerror="this.style.background='var(--surface2)'">
       <div class="watch-info">
         <div class="watch-title">${a.title}</div>
@@ -1988,7 +2022,7 @@ function renderStackCard(seriesEntry, idx){
   const ghost2 = count>=3 ? `<div class="stack-ghost stack-ghost-2"></div>` : '';
   const ghost1 = count>=2 ? `<div class="stack-ghost stack-ghost-1"></div>` : '';
 
-  return `<div class="series-stack" style="animation-delay:${idx*.035}s" onclick="openSeasonModal(${JSON.stringify(seriesEntry.ids).replace(/"/g,'&quot;')})">
+  return `<div class="series-stack" style="animation-delay:${Math.min(idx,20)*.032}s" onclick="openSeasonModal(${JSON.stringify(seriesEntry.ids).replace(/"/g,'&quot;')})">
     ${ghost2}${ghost1}
     <div class="stack-front">
       <div class="card-cover-wrap">
@@ -2262,7 +2296,7 @@ function renderSingleCard(a, i){
     const starsBot=[6,7,8,9,10].map(n=>`<span class="star ${a.myScore>=n?'lit':''}" onclick="quickRate(${a.id},${n})" title="${n}">★</span>`).join('');
     const notifOn = a.notificationsEnabled!==false;
     const showNotif = a.status==='watching'||a.status==='hold';
-      return `<div class="tracker-card" style="animation-delay:${i*0.035}s">
+      return `<div class="tracker-card" style="animation-delay:${Math.min(i,20)*0.032}s">
       <div class="card-cover-wrap">
         <img class="card-cover" src="${a.cover||''}" alt="${a.title}" loading="lazy">
         <span class="status-ribbon s-${a.status}">${STATUS_LABELS[a.status]}</span>
@@ -2324,7 +2358,7 @@ function renderSingleCard(a, i){
     const starsBot=[6,7,8,9,10].map(n=>`<span class="star ${a.myScore>=n?'lit':''}" onclick="quickRate(${a.id},${n})" title="${n}">★</span>`).join('');
     const notifOn = a.notificationsEnabled!==false;
     const showNotif = a.status==='watching'||a.status==='hold';
-    return `<div class="tracker-card" style="animation-delay:${i*0.035}s">
+    return `<div class="tracker-card" style="animation-delay:${Math.min(i,20)*0.032}s">
       <div class="card-cover-wrap">
         <img class="card-cover" src="${a.cover||''}" alt="${a.title}" loading="lazy">
         <span class="status-ribbon s-${a.status}">${STATUS_LABELS[a.status]}</span>
@@ -2777,14 +2811,27 @@ function updateSidebar(){
 function switchTab(tab,btn){
   document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  ['tabList','tabWatch','tabAiring','tabCategories','tabStats','tabFriends','tabWatchlists'].forEach(id=>document.getElementById(id).style.display='none');
-  if(tab==='list'){document.getElementById('tabList').style.display='block';renderGrid();}
-  if(tab==='watch'){document.getElementById('tabWatch').style.display='block';renderWatch();}
-  if(tab==='airing'){document.getElementById('tabAiring').style.display='block';renderAiring();}
-  if(tab==='categories'){document.getElementById('tabCategories').style.display='block';renderCategories();}
-  if(tab==='stats'){document.getElementById('tabStats').style.display='block';renderStats();}
-  if(tab==='friends'){document.getElementById('tabFriends').style.display='block';renderFriends();}
-  if(tab==='watchlists'){document.getElementById('tabWatchlists').style.display='block';renderWatchlists();}
+  const tabIds = ['tabList','tabWatch','tabAiring','tabCategories','tabStats','tabFriends','tabWatchlists','tabRecs'];
+  tabIds.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
+
+  function showTab(id, renderFn){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.style.display='block';
+    el.classList.remove('tab-content-enter');
+    void el.offsetWidth; // force reflow
+    el.classList.add('tab-content-enter');
+    renderFn();
+  }
+
+  if(tab==='list')       showTab('tabList',       renderGrid);
+  if(tab==='watch')      showTab('tabWatch',       renderWatch);
+  if(tab==='airing')     showTab('tabAiring',      renderAiring);
+  if(tab==='categories') showTab('tabCategories',  renderCategories);
+  if(tab==='stats')      showTab('tabStats',        renderStats);
+  if(tab==='friends')    showTab('tabFriends',      renderFriends);
+  if(tab==='watchlists') showTab('tabWatchlists',   renderWatchlists);
+  if(tab==='recs')       showTab('tabRecs',         renderRecs);
 }
 function filterStatus(status,btn){
   currentFilter=status;
