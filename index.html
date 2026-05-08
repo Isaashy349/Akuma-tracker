@@ -365,6 +365,14 @@ nav{
 }
 .rec-card:hover .rec-add{opacity:1}
 .rec-badge{position:absolute;top:.4rem;left:.4rem;font-family:'Space Mono',monospace;font-size:.48rem;background:rgba(0,153,255,.85);color:#fff;padding:.15rem .4rem;border-radius:2px}
+/* Mutual rec extras */
+.mutual-rec-avatars{position:absolute;top:.4rem;left:.4rem;z-index:2;display:flex;gap:.2rem;flex-wrap:wrap}
+.mutual-rec-avatar{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));border:1px solid var(--surface);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.55rem;color:#fff}
+.mutual-rec-score{position:absolute;bottom:.4rem;right:.4rem;z-index:2;background:rgba(0,0,0,.8);border-radius:4px;padding:.15rem .4rem;font-family:'Space Mono',monospace;font-size:.58rem;color:var(--accent3)}
+.friend-pill{display:flex;align-items:center;gap:.4rem;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:.3rem .75rem;font-size:.68rem;cursor:pointer;transition:border-color .2s,background .2s;font-family:'Space Mono',monospace}
+.friend-pill:hover{border-color:var(--accent)}
+.friend-pill.active{border-color:var(--accent);background:rgba(232,0,61,.1);color:var(--text)}
+.friend-pill-avatar{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.55rem;color:#fff;flex-shrink:0}
 
 /* ── AIRING DASHBOARD ── */
 .airing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
@@ -509,6 +517,53 @@ nav{
 .wl-empty-text{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.05em}
 .wl-notes-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;color:var(--muted);font-size:.7rem;outline:none;resize:none;font-family:inherit;box-sizing:border-box;margin-top:.3rem}
 .wl-notes-input:focus{border-color:var(--accent);color:var(--text)}
+
+/* ── FRIEND PROFILE PANEL ── */
+.friend-profile-backdrop{position:fixed;inset:0;z-index:850;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s;display:flex;align-items:center;justify-content:center}
+.friend-profile-backdrop.open{opacity:1;pointer-events:all}
+.friend-profile-panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:min(900px,95vw);max-height:90vh;overflow-y:auto;transform:scale(.94) translateY(24px);transition:transform .3s cubic-bezier(.34,1.4,.64,1);position:relative}
+.friend-profile-backdrop.open .friend-profile-panel{transform:scale(1) translateY(0)}
+.friend-profile-close{position:absolute;top:1rem;right:1rem;z-index:10;background:rgba(0,0,0,.5);border:1px solid var(--border);color:var(--muted);border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s}
+.friend-profile-close:hover{color:var(--text);border-color:var(--accent)}
+/* Banner */
+.fp-banner{height:180px;border-radius:20px 20px 0 0;overflow:hidden;position:relative;background:linear-gradient(135deg,var(--accent),var(--purple))}
+.fp-banner img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
+.fp-banner-grad{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,var(--surface) 100%)}
+/* Hero row */
+.fp-hero{display:flex;align-items:flex-end;gap:1.25rem;padding:0 1.5rem 1.25rem;margin-top:-56px;position:relative;z-index:1}
+.fp-avatar{width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));border:4px solid var(--surface);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;flex-shrink:0;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.fp-hero-info{flex:1;padding-bottom:.25rem}
+.fp-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;line-height:1}
+.fp-joined{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);margin-top:.2rem}
+.fp-bio{font-size:.78rem;color:var(--muted);margin-top:.35rem;line-height:1.5}
+/* Action buttons */
+.fp-actions{display:flex;gap:.5rem;align-self:flex-end;margin-bottom:.3rem;flex-shrink:0}
+/* Stats strip */
+.fp-stats{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.fp-stat{text-align:center;padding:.85rem .5rem;border-right:1px solid var(--border)}
+.fp-stat:last-child{border-right:none}
+.fp-stat-num{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--accent)}
+.fp-stat-label{font-family:'Space Mono',monospace;font-size:.52rem;color:var(--muted);margin-top:.1rem}
+/* Tabs */
+.fp-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 1.5rem}
+.fp-tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:'Space Mono',monospace;font-size:.65rem;padding:.75rem 1rem;cursor:pointer;transition:color .2s,border-color .2s;margin-bottom:-1px}
+.fp-tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.fp-tab-content{padding:1.25rem 1.5rem;min-height:200px}
+/* Compare section */
+.fp-compare-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
+.fp-compare-col{background:var(--surface2);border-radius:8px;padding:.85rem}
+.fp-compare-col-title{font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:.05em;margin-bottom:.65rem;text-align:center}
+.fp-compare-item{display:flex;align-items:center;gap:.5rem;padding:.3rem 0;border-bottom:1px solid var(--border);font-size:.72rem}
+.fp-compare-item img{width:26px;height:36px;object-fit:cover;border-radius:3px;flex-shrink:0}
+/* Friend's list grid */
+.fp-list-filters{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.fp-list-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.75rem}
+.fp-list-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:transform .2s,border-color .2s}
+.fp-list-card:hover{transform:translateY(-3px);border-color:rgba(232,0,61,.25)}
+.fp-list-cover{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:var(--surface3)}
+.fp-list-info{padding:.45rem .5rem}
+.fp-list-title{font-size:.68rem;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.2rem}
+.fp-list-score{font-family:'Space Mono',monospace;font-size:.58rem;color:var(--accent3)}
 
 /* ── THEME PANEL ── */
 .theme-panel{position:fixed;top:0;right:0;height:100vh;width:300px;background:var(--surface);border-left:1px solid var(--border);z-index:900;transform:translateX(100%);transition:transform .35s cubic-bezier(.34,1.1,.64,1);display:flex;flex-direction:column;overflow-y:auto}
@@ -1114,6 +1169,14 @@ nav{
   </div>
 </nav>
 
+<!-- FRIEND PROFILE PANEL -->
+<div class="friend-profile-backdrop" id="friendProfileBackdrop" onclick="closeFriendProfile(event)">
+  <div class="friend-profile-panel" id="friendProfilePanel">
+    <button class="friend-profile-close" onclick="closeFriendProfileModal()">✕</button>
+    <div id="friendProfileContent"></div>
+  </div>
+</div>
+
 <!-- THEME PANEL -->
 <div class="theme-panel" id="themePanel">
   <div class="theme-panel-head">
@@ -1366,6 +1429,16 @@ nav{
           <div class="section-count" id="recCount"></div>
         </div>
         <div class="recs-grid" id="recsGrid"></div>
+      </div>
+
+      <!-- Mutual Recs -->
+      <div class="recs-section" id="mutualRecsSection" style="display:none">
+        <div class="section-header">
+          <div class="section-title">FROM YOUR <span>FRIENDS</span></div>
+          <div class="section-count" id="mutualRecCount"></div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem" id="mutualFriendPills"></div>
+        <div class="recs-grid" id="mutualRecsGrid"></div>
       </div>
     </div>
 
@@ -2843,6 +2916,8 @@ async function renderCategories(){
   } catch(e){
     document.getElementById('recsGrid').innerHTML='<div style="font-family:\'Space Mono\',monospace;font-size:.7rem;color:var(--muted)">Open in browser to load recommendations.</div>';
   }
+  // Load mutual recommendations from friends
+  loadMutualRecs();
 }
 
 /* ═══════════════════════════════════════
@@ -3141,16 +3216,13 @@ async function renderFriends(){
       <div class="friends-panel">
         <div class="friends-panel-title">FRIENDS ${friends.length ? `(${friends.length})` : ''}</div>
         ${friends.length ? friends.map(f=>`
-        <div class="friend-item">
+        <div class="friend-item" style="cursor:pointer" data-uid="${f.id}" data-name="${f.username}" data-fid="${f.friendshipId}" onclick="openFriendProfile(this.dataset.uid,this.dataset.name,this.dataset.fid)">
           <div class="friend-avatar">${f.username[0].toUpperCase()}</div>
           <div class="friend-info">
             <div class="friend-name">${f.username}</div>
+            <div class="friend-meta">Click to view profile</div>
           </div>
-          <div class="friend-actions">
-            <button class="friend-btn view" data-uid="${f.id}" data-name="${f.username}" onclick="viewFriendList(this.dataset.uid,this.dataset.name)">List</button>
-            <button class="friend-btn view" style="background:var(--purple)" data-uid="${f.id}" data-name="${f.username}" onclick="compareLists(this.dataset.uid,this.dataset.name)">Compare</button>
-            <button class="friend-btn remove" data-fid="${f.friendshipId}" data-name="${f.username}" onclick="removeFriend(this.dataset.fid,this.dataset.name)">✗</button>
-          </div>
+          <div style="color:var(--muted);font-size:.75rem">›</div>
         </div>`).join('') : '<div style="color:var(--muted);font-size:.78rem">No friends yet — add someone above!</div>'}
       </div>
     </div>
@@ -3905,6 +3977,338 @@ function loadThemePrefs(){
 
 // Load theme immediately on page load (before login)
 loadThemePrefs();
+/* ═══════════════════════════════════════
+   FRIEND PROFILE PANEL
+═══════════════════════════════════════ */
+let _fpCurrentFriend = null;
+let _fpFriendList = [];
+let _fpFriendshipId = null;
+
+async function openFriendProfile(friendId, friendName, friendshipId){
+  _fpCurrentFriend = { id: friendId, name: friendName };
+  _fpFriendshipId = friendshipId;
+
+  document.getElementById('friendProfileBackdrop').classList.add('open');
+  document.getElementById('friendProfileContent').innerHTML = `
+    <div class="fp-banner"><div class="fp-banner-grad"></div></div>
+    <div class="fp-hero">
+      <div class="fp-avatar">${friendName[0].toUpperCase()}</div>
+      <div class="fp-hero-info">
+        <div class="fp-name">${friendName}</div>
+        <div class="fp-joined" style="color:var(--muted);font-size:.75rem">Loading…</div>
+      </div>
+    </div>`;
+
+  // Fetch in parallel
+  const [friendList, profile] = await Promise.all([
+    getFriendList(friendId),
+    supa.from('profiles').select('username,bio,accent_colour,joined_at').eq('id', friendId).single().then(r=>r.data),
+  ]);
+
+  _fpFriendList = friendList;
+
+  const joined = profile?.joined_at
+    ? 'Joined '+new Date(profile.joined_at).toLocaleDateString('en-GB',{month:'long',year:'numeric'})
+    : '';
+  const bio = profile?.bio || '';
+  const accent = profile?.accent_colour || '#e8003d';
+
+  // Stats
+  const total = friendList.length;
+  const completed = friendList.filter(a=>a.status==='completed').length;
+  const watching = friendList.filter(a=>a.status==='watching').length;
+  const eps = friendList.reduce((s,a)=>s+(a.progress||0),0);
+  const scored = friendList.filter(a=>a.myScore>0);
+  const avg = scored.length ? (scored.reduce((s,a)=>s+a.myScore,0)/scored.length).toFixed(1) : '—';
+
+  // Compare
+  const myIds = new Set(animeList.map(a=>a.id));
+  const friendIds = new Set(friendList.map(a=>a.id));
+  const both = animeList.filter(a=>friendIds.has(a.id));
+  const onlyMe = animeList.filter(a=>!friendIds.has(a.id));
+  const onlyFriend = friendList.filter(a=>!myIds.has(a.id));
+
+  document.getElementById('friendProfileContent').innerHTML = `
+    <!-- Banner -->
+    <div class="fp-banner" style="background:linear-gradient(135deg,${accent},#7b2fff)">
+      <div class="fp-banner-grad"></div>
+    </div>
+
+    <!-- Hero -->
+    <div class="fp-hero">
+      <div class="fp-avatar" style="background:linear-gradient(135deg,${accent},#7b2fff)">${friendName[0].toUpperCase()}</div>
+      <div class="fp-hero-info">
+        <div class="fp-name">${friendName}</div>
+        ${joined ? `<div class="fp-joined">${joined}</div>` : ''}
+        ${bio ? `<div class="fp-bio">${bio}</div>` : ''}
+      </div>
+      <div class="fp-actions">
+        <button class="wl-btn secondary" onclick="compareLists('${friendId}','${friendName}')">Compare Lists</button>
+        <button class="wl-btn danger" data-fid="${friendshipId}" data-name="${friendName}" onclick="removeFriend(this.dataset.fid,this.dataset.name);closeFriendProfileModal()">Remove</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="fp-stats">
+      <div class="fp-stat"><div class="fp-stat-num">${total}</div><div class="fp-stat-label">TOTAL</div></div>
+      <div class="fp-stat"><div class="fp-stat-num">${completed}</div><div class="fp-stat-label">COMPLETED</div></div>
+      <div class="fp-stat"><div class="fp-stat-num">${watching}</div><div class="fp-stat-label">WATCHING</div></div>
+      <div class="fp-stat"><div class="fp-stat-num">${eps}</div><div class="fp-stat-label">EPISODES</div></div>
+      <div class="fp-stat"><div class="fp-stat-num" style="color:var(--accent3)">${avg}</div><div class="fp-stat-label">AVG SCORE</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="fp-tabs">
+      <button class="fp-tab active" onclick="switchFPTab('list',this)">Their List</button>
+      <button class="fp-tab" onclick="switchFPTab('compare',this)">Comparison</button>
+      <button class="fp-tab" onclick="switchFPTab('recs',this)">Recommend to Me</button>
+      <button class="fp-tab" onclick="switchFPTab('fav',this)">Top Rated</button>
+    </div>
+    <div class="fp-tab-content" id="fpTabContent"></div>`;
+
+  switchFPTab('list', document.querySelector('.fp-tab'));
+}
+
+function closeFriendProfileModal(){
+  document.getElementById('friendProfileBackdrop').classList.remove('open');
+}
+function closeFriendProfile(e){
+  if(e.target === document.getElementById('friendProfileBackdrop')) closeFriendProfileModal();
+}
+
+function switchFPTab(tab, btn){
+  document.querySelectorAll('.fp-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const c = document.getElementById('fpTabContent');
+  c.classList.remove('tab-content-enter');
+  void c.offsetWidth;
+  c.classList.add('tab-content-enter');
+
+  if(tab==='list') renderFPList(c);
+  if(tab==='compare') renderFPCompare(c);
+  if(tab==='recs') renderFPRecs(c);
+  if(tab==='fav') renderFPFav(c);
+}
+
+function renderFPList(c){
+  const statuses = ['watching','completed','planned','hold','dropped'];
+  let activeStatus = 'completed';
+
+  function render(status){
+    const filtered = _fpFriendList.filter(a=>a.status===status);
+    return filtered.length
+      ? `<div class="fp-list-grid">${filtered.map(a=>`
+          <div class="fp-list-card">
+            <img class="fp-list-cover" src="${a.cover||''}" onerror="this.style.background='var(--surface3)'">
+            <div class="fp-list-info">
+              <div class="fp-list-title">${a.title}</div>
+              ${a.myScore ? `<div class="fp-list-score">★${a.myScore}/10</div>` : `<div class="fp-list-score" style="color:var(--muted)">${a.year||''}</div>`}
+            </div>
+          </div>`).join('')}</div>`
+      : `<div style="color:var(--muted);font-size:.78rem;padding:1rem">Nothing here</div>`;
+  }
+
+  const counts = {};
+  statuses.forEach(s=>counts[s]=_fpFriendList.filter(a=>a.status===s).length);
+
+  c.innerHTML = `
+    <div class="fp-list-filters">
+      ${statuses.map(s=>`
+        <button class="filter-pill ${s===activeStatus?'active':''}" onclick="fpListFilter('${s}',this)">${STATUS_LABELS[s]||s} (${counts[s]||0})</button>
+      `).join('')}
+    </div>
+    <div id="fpListBody">${render(activeStatus)}</div>`;
+
+  window.fpListFilter = (status, btn)=>{
+    document.querySelectorAll('.fp-list-filters .filter-pill').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('fpListBody').innerHTML = render(status);
+  };
+}
+
+function renderFPCompare(c){
+  const myIds = new Set(animeList.map(a=>a.id));
+  const friendIds = new Set(_fpFriendList.map(a=>a.id));
+  const both = animeList.filter(a=>friendIds.has(a.id));
+  const onlyMe = animeList.filter(a=>!friendIds.has(a.id));
+  const onlyFriend = _fpFriendList.filter(a=>!myIds.has(a.id));
+
+  const col = (title, color, list) => `
+    <div class="fp-compare-col">
+      <div class="fp-compare-col-title" style="color:${color}">${title} (${list.length})</div>
+      ${list.slice(0,30).map(a=>`
+        <div class="fp-compare-item">
+          ${a.cover?`<img src="${a.cover}" onerror="this.style.display='none'">` : ''}
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.title}</span>
+        </div>`).join('')}
+      ${list.length>30?`<div style="font-size:.65rem;color:var(--muted);text-align:center;padding:.5rem">+${list.length-30} more</div>`:''}
+    </div>`;
+
+  c.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1rem;text-align:center">
+      <div style="background:var(--surface2);border-radius:8px;padding:.75rem">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--green)">${both.length}</div>
+        <div style="font-size:.65rem;color:var(--muted)">IN COMMON</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:.75rem">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--blue)">${onlyMe.length}</div>
+        <div style="font-size:.65rem;color:var(--muted)">ONLY YOU</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:.75rem">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--purple)">${onlyFriend.length}</div>
+        <div style="font-size:.65rem;color:var(--muted)">ONLY ${_fpCurrentFriend.name.toUpperCase()}</div>
+      </div>
+    </div>
+    <div class="fp-compare-grid">
+      ${col('IN COMMON','var(--green)',both)}
+      ${col('ONLY YOU','var(--blue)',onlyMe)}
+      ${col('ONLY '+_fpCurrentFriend.name.toUpperCase(),'var(--purple)',onlyFriend)}
+    </div>`;
+}
+
+function renderFPRecs(c){
+  // Shows anime they've rated 8+ that you haven't seen
+  const myIds = new Set(animeList.map(a=>a.id));
+  const recs = _fpFriendList
+    .filter(a=>a.myScore>=8 && a.status==='completed' && !myIds.has(a.id))
+    .sort((a,b)=>b.myScore-a.myScore);
+
+  if(!recs.length){
+    c.innerHTML = `<div style="color:var(--muted);font-size:.78rem;padding:1rem">${_fpCurrentFriend.name} hasn't rated anything 8+ that you haven't seen yet.</div>`;
+    return;
+  }
+
+  c.innerHTML = `
+    <div style="font-size:.72rem;color:var(--muted);margin-bottom:.85rem">${recs.length} anime ${_fpCurrentFriend.name} rated 8+ that you haven't seen</div>
+    <div class="fp-list-grid">${recs.map(a=>`
+      <div class="fp-list-card" onclick="addAnime(${a.id});this.style.opacity='.5'" title="Click to add to your list" style="cursor:pointer">
+        <img class="fp-list-cover" src="${a.cover||''}" onerror="this.style.background='var(--surface3)'">
+        <div class="fp-list-info">
+          <div class="fp-list-title">${a.title}</div>
+          <div class="fp-list-score">★${a.myScore}/10</div>
+        </div>
+      </div>`).join('')}
+    </div>`;
+}
+
+function renderFPFav(c){
+  const top = [..._fpFriendList].filter(a=>a.myScore>0).sort((a,b)=>b.myScore-a.myScore).slice(0,20);
+  if(!top.length){
+    c.innerHTML = `<div style="color:var(--muted);font-size:.78rem;padding:1rem">${_fpCurrentFriend.name} hasn't rated any anime yet.</div>`;
+    return;
+  }
+  c.innerHTML = `<div class="fp-list-grid">${top.map(a=>`
+    <div class="fp-list-card">
+      <img class="fp-list-cover" src="${a.cover||''}" onerror="this.style.background='var(--surface3)'">
+      <div class="fp-list-info">
+        <div class="fp-list-title">${a.title}</div>
+        <div class="fp-list-score">★${a.myScore}/10</div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+/* ═══════════════════════════════════════
+   MUTUAL RECOMMENDATIONS
+═══════════════════════════════════════ */
+let _mutualRecsData = []; // [{anime, friends:[{id,name,score}]}]
+let _activeMutualFriend = null; // null = show all friends
+
+async function loadMutualRecs(){
+  const section = document.getElementById('mutualRecsSection');
+  if(!section) return;
+
+  const friends = await getFriends();
+  if(!friends.length){
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = 'block';
+  document.getElementById('mutualRecsGrid').innerHTML = '<div style="color:var(--muted);font-size:.75rem">Loading friend recommendations…</div>';
+
+  const myIds = new Set(animeList.map(a=>a.id));
+  const animeMap = {}; // animeId -> {cover, title, year, friends:[]}
+
+  // Fetch each friend's list and find highly rated anime you haven't seen
+  for(const friend of friends){
+    try{
+      const friendList = await getFriendList(friend.id);
+      const highlyRated = friendList.filter(a=>
+        a.myScore >= 8 &&
+        a.status === 'completed' &&
+        !myIds.has(a.id)
+      );
+      highlyRated.forEach(a=>{
+        if(!animeMap[a.id]){
+          animeMap[a.id] = { id:a.id, title:a.title, cover:a.cover, year:a.year, friends:[] };
+        }
+        animeMap[a.id].friends.push({ id:friend.id, name:friend.username, score:a.myScore });
+      });
+    } catch(e){ console.warn('Could not load list for', friend.username); }
+  }
+
+  // Sort by number of friends who recommend it, then by average score
+  _mutualRecsData = Object.values(animeMap).sort((a,b)=>{
+    if(b.friends.length !== a.friends.length) return b.friends.length - a.friends.length;
+    const avgA = a.friends.reduce((s,f)=>s+f.score,0)/a.friends.length;
+    const avgB = b.friends.reduce((s,f)=>s+f.score,0)/b.friends.length;
+    return avgB - avgA;
+  });
+
+  // Render friend filter pills
+  document.getElementById('mutualFriendPills').innerHTML =
+    `<div class="friend-pill active" data-friend="all" onclick="filterMutualRecs('all',this)">
+      <div class="friend-pill-avatar">★</div> All Friends
+    </div>` +
+    friends.map(f=>`
+      <div class="friend-pill" data-friend="${f.id}" onclick="filterMutualRecs('${f.id}',this)">
+        <div class="friend-pill-avatar">${f.username[0].toUpperCase()}</div>
+        ${f.username}
+      </div>`).join('');
+
+  renderMutualRecsGrid(_mutualRecsData);
+}
+
+function filterMutualRecs(friendId, el){
+  _activeMutualFriend = friendId === 'all' ? null : friendId;
+  document.querySelectorAll('.friend-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  const filtered = _activeMutualFriend
+    ? _mutualRecsData.filter(a=>a.friends.some(f=>f.id===_activeMutualFriend))
+    : _mutualRecsData;
+  renderMutualRecsGrid(filtered);
+}
+
+function renderMutualRecsGrid(list){
+  const grid = document.getElementById('mutualRecsGrid');
+  const count = document.getElementById('mutualRecCount');
+  if(!list.length){
+    grid.innerHTML = '<div style="color:var(--muted);font-size:.75rem;padding:1rem">No recommendations from this friend yet — they need to rate anime 8+ to appear here.</div>';
+    if(count) count.textContent = '';
+    return;
+  }
+  if(count) count.textContent = list.length + ' picks';
+  grid.innerHTML = list.slice(0,40).map(a=>{
+    const avgScore = (a.friends.reduce((s,f)=>s+f.score,0)/a.friends.length).toFixed(1);
+    const friendAvatars = a.friends.slice(0,3).map(f=>
+      `<div class="mutual-rec-avatar" title="${f.name} · ${f.score}/10">${f.name[0].toUpperCase()}</div>`
+    ).join('');
+    return `<div class="rec-card mutual-rec-card" onclick="addAnime(${a.id});this.style.opacity='.5'" title="${a.title}">
+      <div style="position:relative">
+        <img class="rec-cover" src="${a.cover||''}" loading="lazy" onerror="this.style.background='var(--surface2)'">
+        <div class="mutual-rec-avatars">${friendAvatars}</div>
+        <div class="mutual-rec-score">★${avgScore}</div>
+      </div>
+      <div class="rec-info">
+        <div class="rec-title">${a.title}</div>
+        <div class="rec-meta">${a.year||''} · ${a.friends.length} friend${a.friends.length>1?'s':''} recommend</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Hook into renderRecs/renderCategories to also load mutual recs
+const _origRenderRecs = typeof renderRecs === 'function' ? renderRecs : null;
 </script>
 </body>
 </html>
