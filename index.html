@@ -1832,6 +1832,7 @@ async function anilistQuery(query,variables,token){
 async function searchAniList(q){
   const query=`query($s:String){Page(perPage:10){media(search:$s,type:ANIME,sort:SEARCH_MATCH){id title{romaji english}coverImage{large medium}bannerImage episodes averageScore status genres description(asHtml:false) seasonYear studios(isMain:true){nodes{name}}nextAiringEpisode{episode timeUntilAiring}}}}`;
   const d = await anilistQuery(query,{s:q});
+  if(!d?.data?.Page?.media) throw new Error('Bad response: '+JSON.stringify(d?.errors));
   return d.data.Page.media;
 }
 
@@ -1875,10 +1876,10 @@ async function doSearch(q){
       const isAdded=animeList.some(x=>x.id===a.id);
       const score=a.averageScore?(a.averageScore/10).toFixed(1):'—';
       return `<div class="search-result-item">
-        <img class="result-cover" src="${a.coverImage.medium||''}" alt="" loading="lazy">
+        <img class="result-cover" src="${a.coverImage?.medium||''}" alt="" loading="lazy">
         <div class="result-info">
           <div class="result-title">${title}</div>
-          <div class="result-meta">${a.episodes||'?'} ep · <span class="result-score">★${score}</span> · ${a.genres.slice(0,2).join(', ')} ${a.seasonYear?'· '+a.seasonYear:''}</div>
+          <div class="result-meta">${a.episodes||'?'} ep · <span class="result-score">★${score}</span> · ${(a.genres||[]).slice(0,2).join(', ')} ${a.seasonYear?'· '+a.seasonYear:''}</div>
         </div>
         <button class="result-add-btn ${isAdded?'added':''}" id="addbtn-${a.id}"
           onclick="${isAdded?'':' addAnime('+a.id+')'}">
@@ -1887,7 +1888,8 @@ async function doSearch(q){
       </div>`;
     }).join('');
   } catch(e){
-    searchResultsEl.innerHTML='<div class="search-loading">⚠ Could not reach AniList. Open this file in your browser.</div>';
+    console.error('Search error:', e);
+    searchResultsEl.innerHTML='<div class="search-loading">⚠ Search failed — check your connection and try again.</div>';
   }
 }
 
