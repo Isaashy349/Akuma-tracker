@@ -2649,17 +2649,65 @@ function renderGrid(){
 /* ═══════════════════════════════════════
    QUICK ACTIONS
 ═══════════════════════════════════════ */
+// Patch a single card's DOM without re-rendering the grid
+function patchCard(id){
+  // Find the card element
+  const cards = document.querySelectorAll('.tracker-card');
+  let card = null;
+  for(const c of cards){
+    // Cards have buttons with the id in their onclick
+    if(c.innerHTML.includes('quickProgress('+id+',') || c.innerHTML.includes('quickRate('+id+',')){
+      card = c; break;
+    }
+  }
+  if(!card) return; // card not visible, no patch needed
+  const a = animeList.find(x=>x.id===id); if(!a) return;
+
+  // Update ep label
+  const epLabel = card.querySelector('.progress-label span');
+  if(epLabel) epLabel.textContent = a.progress;
+
+  // Update slider
+  const slider = card.querySelector('.prog-slider');
+  if(slider){
+    slider.value = a.progress;
+    updateSliderTrail(slider);
+  }
+
+  // Update slider ep label
+  const sliderLabel = card.querySelector('.slider-ep-label');
+  if(sliderLabel) sliderLabel.textContent = 'EP '+a.progress+'/'+(a.episodes||'?');
+
+  // Update stars
+  card.querySelectorAll('.star').forEach((s,i)=>{
+    s.classList.toggle('lit', a.myScore >= i+1);
+  });
+
+  // Update rating val
+  const ratingVal = card.querySelector('.rating-val');
+  if(ratingVal) ratingVal.textContent = a.myScore>0?'★'+a.myScore+'/10':'';
+
+  // Update status badge ribbon
+  const ribbon = card.querySelector('.status-ribbon');
+  if(ribbon){
+    ribbon.textContent = (STATUS_LABELS[a.status]||a.status).toUpperCase();
+    ribbon.className = 'status-ribbon '+a.status;
+  }
+}
+
 function quickRate(id,score){
   const a=animeList.find(x=>x.id===id); if(!a) return;
   a.myScore=a.myScore===score?0:score;
-  saveUserList();
-  showToast(score?'★'+a.myScore+' saved':'Rating cleared',''+a.title);
+  patchCard(id);
+  updateSidebar();
+  saveAnime(a);
+  showToast(a.myScore?'★'+a.myScore+' saved':'Rating cleared',''+a.title);
 }
 function toggleNotif(id,el){
   const a=animeList.find(x=>x.id===id); if(!a) return;
   a.notificationsEnabled=!el.classList.contains('on');
   el.classList.toggle('on');
-  saveUserList();
+  saveAnime(a);
   showToast(a.notificationsEnabled?'Alerts on':'Alerts off',''+a.title);
 }
 function quickProgress(id,delta){
@@ -2669,14 +2717,17 @@ function quickProgress(id,delta){
   if(a.progress===a.episodes&&a.episodes>0&&a.status!=='completed'){
     a.status='completed'; showToast('🎉 Completed!',''+a.title);
   }
-  saveUserList();
+  patchCard(id);
+  updateSidebar();
+  saveAnime(a);
 }
 function seekProgress(e,id,total){
   if(!total) return;
   const a=animeList.find(x=>x.id===id); if(!a) return;
   const rect=e.currentTarget.getBoundingClientRect();
   a.progress=Math.round((e.clientX-rect.left)/rect.width*total);
-  saveUserList();
+  patchCard(id);
+  saveAnime(a);
 }
 // Debounce timer for slider saves
 const _sliderTimers = {};
@@ -2725,7 +2776,11 @@ function quickStatus(id,status){
   const a=animeList.find(x=>x.id===id); if(!a) return;
   a.status=status;
   if(status==='completed'&&a.episodes>0) a.progress=a.episodes;
-  saveUserList();
+  patchCard(id);
+  saveAnime(a);
+  updateSidebar();
+  // Only re-render if we're on a status-filtered view and the card should disappear
+  if(currentFilter!=='all' && currentFilter!==status) renderGrid();
   showToast('Status updated',''+STATUS_LABELS[status]);
 }
 function removeAnime(id){
