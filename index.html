@@ -1832,8 +1832,15 @@ async function anilistQuery(query,variables,token){
 async function searchAniList(q){
   const query=`query($s:String){Page(perPage:10){media(search:$s,type:ANIME,sort:SEARCH_MATCH){id title{romaji english}coverImage{large medium}bannerImage episodes averageScore status genres description(asHtml:false) seasonYear studios(isMain:true){nodes{name}}nextAiringEpisode{episode timeUntilAiring}}}}`;
   const d = await anilistQuery(query,{s:q});
-  if(!d?.data?.Page?.media) throw new Error('Bad response: '+JSON.stringify(d?.errors));
-  return d.data.Page.media;
+  const results = d?.data?.Page?.media;
+  if(!results) throw new Error('Bad response: '+JSON.stringify(d?.errors));
+  // If SEARCH_MATCH returns nothing, try POPULARITY_DESC as fallback
+  if(results.length === 0){
+    const query2=`query($s:String){Page(perPage:10){media(search:$s,type:ANIME,sort:POPULARITY_DESC){id title{romaji english}coverImage{large medium}bannerImage episodes averageScore status genres description(asHtml:false) seasonYear studios(isMain:true){nodes{name}}nextAiringEpisode{episode timeUntilAiring}}}}`;
+    const d2 = await anilistQuery(query2,{s:q});
+    return d2?.data?.Page?.media || [];
+  }
+  return results;
 }
 
 async function fetchById(id){
@@ -2688,10 +2695,14 @@ function sliderProgress(id, val, el){
   a.progress=parseInt(val);
   // Update trail immediately
   updateSliderTrail(el);
-  // Update ep label immediately
-  const label = el.closest('.prog-slider-wrap')?.querySelector('.slider-ep-label');
-  if(label) label.textContent='EP '+a.progress+'/'+(a.episodes||'?');
-  // Debounce the actual save so it only fires when user stops dragging
+  // Update slider ep label
+  const wrap = el.closest('.prog-slider-wrap');
+  const sliderLabel = wrap?.querySelector('.slider-ep-label');
+  if(sliderLabel) sliderLabel.textContent='EP '+a.progress+'/'+(a.episodes||'?');
+  // Update the progress-label span above the slider
+  const progressRow = wrap?.closest('.progress-section')?.querySelector('.progress-label span');
+  if(progressRow) progressRow.textContent = a.progress;
+  // Debounce the actual save
   _debounceSliderSave(id, ()=>{
     if(a.progress===a.episodes && a.episodes>0){ a.status='completed'; }
     saveAnime(a);
