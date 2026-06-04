@@ -1933,6 +1933,7 @@ async function addAnime(id){
    Priority order — first working site wins
 ═══════════════════════════════════════ */
 const STREAM_SOURCES = [
+  { name:'Crunchyroll', url:'https://www.crunchyroll.com', search:'https://www.crunchyroll.com/search?q=QUERY', label:'Sub/Dub ✓', cr:true },
   { name:'Muse Asia',  url:'https://www.youtube.com/@MuseAsia',        search:'https://www.youtube.com/results?search_query=QUERY+full+episode+muse+asia+english+sub', label:'Legal ✓' },
   { name:'AniKai',     url:'https://anikai.net',                       search:'https://anikai.net/?s=QUERY',                                               label:'' },
   { name:'HiAnime',    url:'https://hianime.lc',                      search:'https://hianime.lc/search?keyword=QUERY',                                    label:'' },
@@ -1940,6 +1941,19 @@ const STREAM_SOURCES = [
   { name:'Gogoanime',  url:'https://anitaku.pe',                       search:'https://anitaku.pe/search.html?keyword=QUERY',                               label:'' },
   { name:'9Anime',     url:'https://9animetv.to',                      search:'https://9animetv.to/search?keyword=QUERY',                                   label:'' },
 ];
+
+// Track the Crunchyroll tab reference so we can reuse it
+let _crunchyrollTab = null;
+
+function openCrunchyroll(searchUrl){
+  // If we have a reference to an existing CR tab and it's not closed, reuse it
+  if(_crunchyrollTab && !_crunchyrollTab.closed){
+    _crunchyrollTab.location.href = searchUrl;
+    _crunchyrollTab.focus();
+  } else {
+    _crunchyrollTab = window.open(searchUrl, 'crunchyroll_tab');
+  }
+}
 
 let watchFilter = 'all';
 let sourceStatuses = {}; // cache of which sources are reachable
@@ -2082,7 +2096,11 @@ async function watchNow(id, ep){
 
       // Source is reachable — build search URL and open
       const searchUrl = src.search.replace('QUERY', query);
-      window.open(searchUrl, '_blank');
+      if(src.cr){
+        openCrunchyroll(searchUrl);
+      } else {
+        window.open(searchUrl, '_blank');
+      }
       opened = true;
 
       // Update UI
@@ -2098,7 +2116,8 @@ async function watchNow(id, ep){
       if(ep === a.progress+1 && ep <= (a.episodes||9999)){
         a.progress = ep;
         if(a.progress===a.episodes && a.episodes>0) a.status='completed';
-        saveUserList();
+        saveAnime(a);
+        updateSidebar();
         showToast('Progress updated','EP '+ep+' · '+a.title);
         setTimeout(renderWatch, 500);
       }
