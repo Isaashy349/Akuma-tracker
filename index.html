@@ -518,6 +518,89 @@ nav{
 .wl-notes-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;color:var(--muted);font-size:.7rem;outline:none;resize:none;font-family:inherit;box-sizing:border-box;margin-top:.3rem}
 .wl-notes-input:focus{border-color:var(--accent);color:var(--text)}
 
+/* ── AIRING CALENDAR ── */
+.cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:.6rem}
+.cal-day{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-height:120px}
+.cal-day.today{border-color:var(--accent);box-shadow:0 0 0 1px rgba(232,0,61,.2)}
+.cal-day-head{padding:.5rem .65rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cal-day-name{font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:.06em}
+.cal-day-date{font-family:'Space Mono',monospace;font-size:.55rem;color:var(--muted)}
+.cal-day.today .cal-day-name{color:var(--accent)}
+.cal-entries{padding:.4rem}
+.cal-entry{display:flex;align-items:center;gap:.5rem;padding:.35rem .4rem;border-radius:6px;cursor:pointer;transition:background .15s;margin-bottom:.25rem}
+.cal-entry:hover{background:var(--surface2)}
+.cal-entry:last-child{margin-bottom:0}
+.cal-entry-cover{width:28px;height:40px;object-fit:cover;border-radius:3px;flex-shrink:0;background:var(--surface3)}
+.cal-entry-info{flex:1;min-width:0}
+.cal-entry-title{font-size:.68rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.cal-entry-ep{font-family:'Space Mono',monospace;font-size:.55rem;color:var(--muted);margin-top:.15rem}
+.cal-entry-time{font-family:'Space Mono',monospace;font-size:.5rem;color:var(--accent);margin-top:.1rem}
+.cal-empty{font-size:.65rem;color:var(--muted);padding:.5rem .4rem;font-family:'Space Mono',monospace}
+.cal-loading{font-size:.65rem;color:var(--muted);padding:.5rem .4rem;font-family:'Space Mono',monospace;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+/* Today highlight badge */
+.today-badge{background:var(--accent);color:#fff;border-radius:4px;font-family:'Space Mono',monospace;font-size:.48rem;padding:.1rem .3rem}
+
+/* ── ANIME DETAILS MODAL ── */
+.details-backdrop{position:fixed;inset:0;z-index:850;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.details-backdrop.open{opacity:1;pointer-events:all}
+.details-modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:min(860px,95vw);max-height:92vh;overflow-y:auto;transform:scale(.94) translateY(24px);transition:transform .3s cubic-bezier(.34,1.4,.64,1);position:relative}
+.details-backdrop.open .details-modal{transform:scale(1) translateY(0)}
+.details-close{position:absolute;top:1rem;right:1rem;z-index:10;background:rgba(0,0,0,.6);border:1px solid var(--border);color:var(--muted);border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s}
+.details-close:hover{color:var(--text);border-color:var(--accent)}
+/* Details banner */
+.det-banner{height:200px;position:relative;border-radius:20px 20px 0 0;overflow:hidden;background:linear-gradient(135deg,var(--surface2),var(--surface3))}
+.det-banner img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
+.det-banner-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.1) 0%,var(--surface) 100%)}
+/* Details hero */
+.det-hero{display:flex;gap:1.25rem;padding:0 1.5rem 1.25rem;margin-top:-80px;position:relative;z-index:1}
+.det-cover{width:110px;height:160px;border-radius:10px;object-fit:cover;flex-shrink:0;box-shadow:0 12px 32px rgba(0,0,0,.6);background:var(--surface2);border:2px solid var(--border)}
+.det-hero-info{flex:1;padding-top:2rem}
+.det-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;line-height:1.1}
+.det-title-jp{font-size:.8rem;color:var(--muted);margin-top:.2rem;font-family:'Noto Sans JP',sans-serif}
+.det-meta-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.6rem;align-items:center}
+.det-badge{background:var(--surface2);border:1px solid var(--border);border-radius:6px;font-family:'Space Mono',monospace;font-size:.6rem;padding:.2rem .55rem;color:var(--muted)}
+.det-badge.score{color:var(--accent3);border-color:rgba(255,154,0,.3)}
+.det-badge.status-badge{color:var(--green);border-color:rgba(0,230,118,.3)}
+/* Details stats row */
+.det-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.det-stat{text-align:center;padding:.75rem .5rem;border-right:1px solid var(--border)}
+.det-stat:last-child{border-right:none}
+.det-stat-num{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--accent)}
+.det-stat-label{font-family:'Space Mono',monospace;font-size:.52rem;color:var(--muted);margin-top:.1rem}
+/* Tabs */
+.det-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 1.5rem}
+.det-tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:'Space Mono',monospace;font-size:.65rem;padding:.75rem 1rem;cursor:pointer;transition:color .2s,border-color .2s;margin-bottom:-1px}
+.det-tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.det-tab-content{padding:1.25rem 1.5rem}
+/* Synopsis */
+.det-synopsis{font-size:.8rem;line-height:1.7;color:var(--muted)}
+.det-synopsis b{color:var(--text)}
+/* Genres */
+.det-genres{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem}
+.det-genre{background:var(--surface2);border:1px solid var(--border);border-radius:20px;font-size:.68rem;padding:.25rem .7rem;font-family:'Space Mono',monospace;cursor:pointer;transition:border-color .15s,color .15s}
+.det-genre:hover{border-color:var(--accent);color:var(--text)}
+/* Related anime */
+.det-related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.75rem}
+.det-related-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
+.det-related-card:hover{transform:translateY(-3px);border-color:rgba(232,0,61,.3)}
+.det-related-cover{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:var(--surface3)}
+.det-related-info{padding:.4rem .45rem}
+.det-related-title{font-size:.62rem;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.det-related-type{font-size:.55rem;color:var(--accent);font-family:'Space Mono',monospace;margin-top:.15rem}
+/* Staff/chars */
+.det-people-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem}
+.det-person{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.6rem;display:flex;gap:.6rem;align-items:center}
+.det-person-img{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--surface3);flex-shrink:0}
+.det-person-info{flex:1;min-width:0}
+.det-person-name{font-size:.68rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.det-person-role{font-size:.58rem;color:var(--muted)}
+/* My progress section */
+.det-my-section{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:1rem}
+.det-my-title{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.06em;margin-bottom:.75rem;color:var(--muted)}
+/* Trailer */
+.det-trailer{width:100%;aspect-ratio:16/9;border-radius:10px;border:none;background:var(--surface2)}
+
 /* ── FRIEND PROFILE PANEL ── */
 .friend-profile-backdrop{position:fixed;inset:0;z-index:850;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s;display:flex;align-items:center;justify-content:center}
 .friend-profile-backdrop.open{opacity:1;pointer-events:all}
@@ -1169,6 +1252,14 @@ nav{
   </div>
 </nav>
 
+<!-- ANIME DETAILS MODAL -->
+<div class="details-backdrop" id="detailsBackdrop" onclick="closeDetailsOnBack(event)">
+  <div class="details-modal" id="detailsModal">
+    <button class="details-close" onclick="closeDetails()">✕</button>
+    <div id="detailsContent"></div>
+  </div>
+</div>
+
 <!-- FRIEND PROFILE PANEL -->
 <div class="friend-profile-backdrop" id="friendProfileBackdrop" onclick="closeFriendProfile(event)">
   <div class="friend-profile-panel" id="friendProfilePanel">
@@ -1410,11 +1501,23 @@ nav{
 
     <!-- AIRING TAB -->
     <div id="tabAiring" style="display:none">
-      <div class="section-header">
-        <div class="section-title">CURRENTLY <span>AIRING</span></div>
-        <div class="section-count" id="airingCount"></div>
+      <div class="section-header" style="margin-bottom:.75rem">
+        <div class="section-title">AIRING <span>CALENDAR</span></div>
+        <div style="display:flex;gap:.5rem">
+          <button class="wl-btn secondary" id="airingViewBtn" onclick="toggleAiringView()">📋 List View</button>
+        </div>
       </div>
-      <div id="airingGrid" class="airing-grid"></div>
+
+      <!-- Calendar view -->
+      <div id="airingCalendar">
+        <div class="cal-week" id="calWeek"></div>
+      </div>
+
+      <!-- List view (hidden by default) -->
+      <div id="airingListView" style="display:none">
+        <div class="section-count" id="airingCount" style="margin-bottom:1rem"></div>
+        <div id="airingGrid" class="airing-grid"></div>
+      </div>
     </div>
 
     <!-- CATEGORIES TAB -->
@@ -2557,12 +2660,12 @@ function renderSingleCard(a, i){
     const notifOn = a.notificationsEnabled!==false;
     const showNotif = a.status==='watching'||a.status==='hold';
     return `<div class="tracker-card" style="animation-delay:${Math.min(i,20)*0.032}s">
-      <div class="card-cover-wrap">
+      <div class="card-cover-wrap" onclick="openDetails(${a.id})" style="cursor:pointer">
         <img class="card-cover" src="${a.cover||''}" alt="${a.title}" loading="lazy">
         <span class="status-ribbon s-${a.status}">${STATUS_LABELS[a.status]}</span>
         ${a.myScore>0?`<div class="score-badge"><span class="score-star">★</span>${a.myScore}</div>`:''}
         <div class="card-actions">
-          <button class="action-btn" onclick="openModal(${a.id})">
+          <button class="action-btn" onclick="event.stopPropagation();openModal(${a.id})">
             <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
             Edit
           </button>
@@ -4396,6 +4499,349 @@ function renderMutualRecsGrid(list){
 
 // Hook into renderRecs/renderCategories to also load mutual recs
 const _origRenderRecs = typeof renderRecs === 'function' ? renderRecs : null;
+
+/* ═══════════════════════════════════════
+   AIRING CALENDAR
+═══════════════════════════════════════ */
+let _airingCalendarView = true; // true = calendar, false = list
+
+function toggleAiringView(){
+  _airingCalendarView = !_airingCalendarView;
+  document.getElementById('airingCalendar').style.display = _airingCalendarView ? 'block' : 'none';
+  document.getElementById('airingListView').style.display = _airingCalendarView ? 'none' : 'block';
+  document.getElementById('airingViewBtn').textContent = _airingCalendarView ? '📋 List View' : '📅 Calendar View';
+  if(!_airingCalendarView) renderAiringList();
+}
+
+async function renderAiring(){
+  if(_airingCalendarView){
+    await renderAiringCalendar();
+  } else {
+    renderAiringList();
+  }
+}
+
+async function renderAiringCalendar(){
+  const calWeek = document.getElementById('calWeek');
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const now = new Date();
+  const today = now.getDay(); // 0=Sun
+
+  // Build 7-day columns starting from today
+  calWeek.innerHTML = days.map((d,i)=>{
+    const offset = (i - today + 7) % 7;
+    const date = new Date(now);
+    date.setDate(now.getDate() + offset);
+    const isToday = offset === 0;
+    const dd = date.getDate();
+    const mm = date.toLocaleDateString('en-GB',{month:'short'});
+    return `<div class="cal-day ${isToday?'today':''}" id="calDay-${i}">
+      <div class="cal-day-head">
+        <span class="cal-day-name">${d}</span>
+        <span class="${isToday?'today-badge':'cal-day-date'}">${isToday?'TODAY':dd+' '+mm}</span>
+      </div>
+      <div class="cal-entries" id="calEntries-${i}">
+        <div class="cal-loading">Loading…</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Fetch airing schedule from AniList for all tracked + watching shows
+  const tracked = animeList.filter(a=>a.status==='watching'||a.status==='planned'||a.status==='hold');
+  if(!tracked.length){
+    days.forEach((_,i)=>{
+      document.getElementById('calEntries-'+i).innerHTML = '<div class="cal-empty">—</div>';
+    });
+    return;
+  }
+
+  // Fetch airing data for tracked shows in batches
+  const ids = tracked.map(a=>a.id);
+  try{
+    const query = `query($ids:[Int]){
+      Page(perPage:50){
+        media(id_in:$ids,type:ANIME,status_in:[RELEASING,NOT_YET_RELEASED]){
+          id
+          nextAiringEpisode{ episode timeUntilAiring airingAt }
+          airingSchedule(notYetAired:true,perPage:7){ nodes{ episode timeUntilAiring airingAt } }
+        }
+      }
+    }`;
+    const d = await anilistQuery(query, {ids});
+    const mediaMap = {};
+    (d?.data?.Page?.media||[]).forEach(m=>{ mediaMap[m.id] = m; });
+
+    // Clear loading states
+    days.forEach((_,i)=>{
+      document.getElementById('calEntries-'+i).innerHTML = '';
+    });
+
+    // Place episodes into the right day columns
+    tracked.forEach(a=>{
+      const media = mediaMap[a.id];
+      if(!media) return;
+      const episodes = media.airingSchedule?.nodes || (media.nextAiringEpisode ? [media.nextAiringEpisode] : []);
+      episodes.forEach(ep=>{
+        if(!ep.airingAt) return;
+        const airingDate = new Date(ep.airingAt * 1000);
+        const airingDay = airingDate.getDay();
+        // Find which column this falls in (within next 7 days)
+        const offset = (airingDay - today + 7) % 7;
+        if(offset > 6) return;
+        const col = document.getElementById('calEntries-'+offset);
+        if(!col) return;
+        const timeStr = airingDate.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+        const entry = document.createElement('div');
+        entry.className = 'cal-entry';
+        entry.onclick = ()=>openDetails(a.id);
+        entry.innerHTML = `
+          <img class="cal-entry-cover" src="${a.cover||''}" onerror="this.style.background='var(--surface3)'">
+          <div class="cal-entry-info">
+            <div class="cal-entry-title">${a.title}</div>
+            <div class="cal-entry-ep">EP ${ep.episode}</div>
+            <div class="cal-entry-time">${timeStr}</div>
+          </div>`;
+        col.appendChild(entry);
+      });
+    });
+
+    // Fill empty days
+    days.forEach((_,i)=>{
+      const col = document.getElementById('calEntries-'+i);
+      if(col && !col.children.length){
+        col.innerHTML = '<div class="cal-empty">Nothing airing</div>';
+      }
+    });
+
+  } catch(e){
+    console.error('Calendar fetch error:', e);
+    days.forEach((_,i)=>{
+      const col = document.getElementById('calEntries-'+i);
+      if(col) col.innerHTML = '<div class="cal-empty">—</div>';
+    });
+  }
+}
+
+function renderAiringList(){
+  const tracked = animeList.filter(a=>a.status==='watching'||a.status==='hold');
+  document.getElementById('airingCount').textContent = tracked.length+' tracked';
+  const grid = document.getElementById('airingGrid');
+  if(!tracked.length){
+    grid.innerHTML = '<div style="font-family:\'Space Mono\',monospace;font-size:.75rem;color:var(--muted);padding:2rem">No anime with Watching or On Hold status.</div>';
+    return;
+  }
+  grid.innerHTML = tracked.map(a=>{
+    const pct = a.episodes ? Math.round(a.progress/a.episodes*100) : 0;
+    const hasUpdate = a.lastKnownEps && a.lastKnownEps > a.progress;
+    const next = a.nextAiring;
+    const nextStr = next ? `Next EP ${next.episode} in ${formatTime(next.timeUntilAiring)}` : 'Next episode TBA';
+    return `<div class="airing-card ${hasUpdate?'has-update':''}" onclick="openDetails(${a.id})" style="cursor:pointer">
+      <img class="airing-cover" src="${a.cover||''}" alt="">
+      <div class="airing-info">
+        <div class="airing-title">${a.title}</div>
+        <div class="airing-ep">
+          EP <span class="current">${a.progress}</span> / <span class="total">${a.episodes||'?'}</span>
+          ${hasUpdate?` <span class="new">· EP ${a.lastKnownEps} OUT!</span>`:''}
+        </div>
+        <div class="airing-next">${next ? nextStr : (a.episodes ? 'Completed airing' : 'Ongoing')}</div>
+        <div class="airing-prog"><div class="airing-prog-fill" style="width:${pct}%"></div></div>
+      </div>
+      ${hasUpdate?'<div class="update-badge">NEW</div>':''}
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════
+   ANIME DETAILS PAGE
+═══════════════════════════════════════ */
+let _detailsCache = {}; // cache fetched details by id
+
+async function openDetails(id){
+  document.getElementById('detailsBackdrop').classList.add('open');
+  document.getElementById('detailsContent').innerHTML = `
+    <div class="det-banner"><div class="det-banner-grad"></div></div>
+    <div style="padding:1.5rem;color:var(--muted);font-family:'Space Mono',monospace;font-size:.75rem">Loading…</div>`;
+
+  // Check cache first
+  if(_detailsCache[id]){
+    renderDetailsContent(_detailsCache[id]);
+    return;
+  }
+
+  try{
+    const query = `query($id:Int){
+      Media(id:$id,type:ANIME){
+        id
+        title{ romaji english native }
+        description(asHtml:false)
+        bannerImage
+        coverImage{ large extraLarge }
+        episodes averageScore meanScore popularity favourites
+        status season seasonYear
+        genres tags{ name rank }
+        studios(isMain:true){ nodes{ name siteUrl } }
+        staff(perPage:8){ edges{ role node{ name{ full } image{ medium } siteUrl } } }
+        characters(perPage:8,sort:ROLE){ edges{ role node{ name{ full } image{ medium } } } }
+        relations{ edges{ relationType(version:2) node{ id title{ romaji english } coverImage{ medium } type format } } }
+        trailer{ id site }
+        siteUrl
+        nextAiringEpisode{ episode timeUntilAiring }
+        streamingEpisodes(page:1,perPage:1){ title thumbnail url }
+      }
+    }`;
+    const d = await anilistQuery(query, {id: parseInt(id)});
+    const media = d?.data?.Media;
+    if(!media) throw new Error('No data');
+    _detailsCache[id] = media;
+    renderDetailsContent(media);
+  } catch(e){
+    document.getElementById('detailsContent').innerHTML = `<div style="padding:2rem;color:var(--muted);font-family:'Space Mono',monospace">Failed to load details. Try again.</div>`;
+  }
+}
+
+function renderDetailsContent(media){
+  const inList = animeList.find(a=>a.id===media.id);
+  const title = media.title.english || media.title.romaji;
+  const score = media.averageScore ? (media.averageScore/10).toFixed(1) : '—';
+  const statusLabel = {FINISHED:'Finished',RELEASING:'Airing',NOT_YET_RELEASED:'Upcoming',CANCELLED:'Cancelled'}[media.status]||media.status;
+  const desc = (media.description||'No synopsis available.').replace(/<[^>]+>/g,'').slice(0,800)+(media.description?.length>800?'…':'');
+  const trailer = media.trailer?.site==='youtube' ? `https://www.youtube.com/embed/${media.trailer.id}` : null;
+
+  document.getElementById('detailsContent').innerHTML = `
+    <!-- Banner -->
+    <div class="det-banner">
+      ${media.bannerImage ? `<img src="${media.bannerImage}" onerror="this.style.display='none'">` : ''}
+      <div class="det-banner-grad"></div>
+    </div>
+
+    <!-- Hero -->
+    <div class="det-hero">
+      <img class="det-cover" src="${media.coverImage?.extraLarge||media.coverImage?.large||''}" onerror="this.style.background='var(--surface2)'">
+      <div class="det-hero-info">
+        <div class="det-title">${title}</div>
+        ${media.title.native ? `<div class="det-title-jp">${media.title.native}</div>` : ''}
+        <div class="det-meta-row">
+          ${score!=='—'?`<span class="det-badge score">★ ${score}</span>`:''}
+          <span class="det-badge status-badge">${statusLabel}</span>
+          ${media.season?`<span class="det-badge">${media.season} ${media.seasonYear||''}</span>`:''}
+          ${media.episodes?`<span class="det-badge">${media.episodes} eps</span>`:''}
+          ${media.studios?.nodes?.[0]?`<span class="det-badge">${media.studios.nodes[0].name}</span>`:''}
+        </div>
+        ${inList ? `
+        <div style="margin-top:.75rem;display:flex;gap:.5rem;align-items:center">
+          <span style="font-family:'Space Mono',monospace;font-size:.65rem;color:var(--green)">✓ In your list</span>
+          <span style="font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted)">EP ${inList.progress}/${inList.episodes||'?'} · ${STATUS_LABELS[inList.status]||inList.status}${inList.myScore?` · ★${inList.myScore}`:''}
+          </span>
+        </div>` : `
+        <button class="wl-btn primary" style="margin-top:.75rem" onclick="addAnime(${media.id});this.textContent='✓ Added';this.disabled=true">+ Add to List</button>`}
+        ${media.siteUrl?`<a href="${media.siteUrl}" target="_blank" style="font-family:'Space Mono',monospace;font-size:.58rem;color:var(--muted);display:inline-block;margin-top:.4rem">View on AniList ↗</a>`:''}
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="det-stats">
+      <div class="det-stat"><div class="det-stat-num">${score}</div><div class="det-stat-label">SCORE</div></div>
+      <div class="det-stat"><div class="det-stat-num">${media.popularity?.toLocaleString()||'—'}</div><div class="det-stat-label">USERS</div></div>
+      <div class="det-stat"><div class="det-stat-num">${media.favourites?.toLocaleString()||'—'}</div><div class="det-stat-label">FAVOURITES</div></div>
+      <div class="det-stat"><div class="det-stat-num">${media.episodes||'—'}</div><div class="det-stat-label">EPISODES</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="det-tabs">
+      <button class="det-tab active" onclick="switchDetTab('overview',this)">Overview</button>
+      <button class="det-tab" onclick="switchDetTab('characters',this)">Characters</button>
+      <button class="det-tab" onclick="switchDetTab('staff',this)">Staff</button>
+      <button class="det-tab" onclick="switchDetTab('related',this)">Related</button>
+      ${trailer?`<button class="det-tab" onclick="switchDetTab('trailer',this)">Trailer</button>`:''}
+    </div>
+    <div class="det-tab-content" id="detTabContent">
+      ${renderDetOverview(media, desc)}
+    </div>`;
+
+  // Store media on window for tab switching
+  window._currentDetailsMedia = media;
+}
+
+function switchDetTab(tab, btn){
+  document.querySelectorAll('.det-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const c = document.getElementById('detTabContent');
+  const media = window._currentDetailsMedia;
+  if(tab==='overview') c.innerHTML = renderDetOverview(media, (media.description||'').replace(/<[^>]+>/g,'').slice(0,800));
+  if(tab==='characters') c.innerHTML = renderDetCharacters(media);
+  if(tab==='staff') c.innerHTML = renderDetStaff(media);
+  if(tab==='related') c.innerHTML = renderDetRelated(media);
+  if(tab==='trailer') c.innerHTML = renderDetTrailer(media);
+}
+
+function renderDetOverview(media, desc){
+  const tags = (media.tags||[]).filter(t=>t.rank>=70).slice(0,8);
+  return `
+    <p class="det-synopsis">${desc}</p>
+    <div class="det-genres">
+      ${(media.genres||[]).map(g=>`<span class="det-genre">${g}</span>`).join('')}
+      ${tags.map(t=>`<span class="det-genre" style="opacity:.7">${t.name}</span>`).join('')}
+    </div>
+    ${media.nextAiringEpisode ? `
+    <div style="margin-top:1rem;background:rgba(232,0,61,.08);border:1px solid rgba(232,0,61,.2);border-radius:8px;padding:.75rem 1rem;font-family:'Space Mono',monospace;font-size:.68rem">
+      📺 EP ${media.nextAiringEpisode.episode} airs in <b style="color:var(--accent)">${formatTime(media.nextAiringEpisode.timeUntilAiring)}</b>
+    </div>` : ''}`;
+}
+
+function renderDetCharacters(media){
+  const chars = media.characters?.edges||[];
+  if(!chars.length) return '<div style="color:var(--muted);font-size:.78rem">No character data available.</div>';
+  return `<div class="det-people-grid">${chars.map(e=>`
+    <div class="det-person">
+      <img class="det-person-img" src="${e.node.image?.medium||''}" onerror="this.style.background='var(--surface3)'">
+      <div class="det-person-info">
+        <div class="det-person-name">${e.node.name?.full||'Unknown'}</div>
+        <div class="det-person-role">${e.role}</div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function renderDetStaff(media){
+  const staff = media.staff?.edges||[];
+  if(!staff.length) return '<div style="color:var(--muted);font-size:.78rem">No staff data available.</div>';
+  return `<div class="det-people-grid">${staff.map(e=>`
+    <div class="det-person">
+      <img class="det-person-img" src="${e.node.image?.medium||''}" onerror="this.style.background='var(--surface3)'">
+      <div class="det-person-info">
+        <div class="det-person-name">${e.node.name?.full||'Unknown'}</div>
+        <div class="det-person-role">${e.role}</div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function renderDetRelated(media){
+  const related = (media.relations?.edges||[]).filter(e=>e.node.type==='ANIME');
+  if(!related.length) return '<div style="color:var(--muted);font-size:.78rem">No related anime.</div>';
+  const typeLabel = {PREQUEL:'Prequel',SEQUEL:'Sequel',SIDE_STORY:'Side Story',SPIN_OFF:'Spin-off',ADAPTATION:'Adaptation',OTHER:'Other',ALTERNATIVE:'Alternative',PARENT:'Parent',SUMMARY:'Summary',CHARACTER:'Character'};
+  return `<div class="det-related-grid">${related.map(e=>`
+    <div class="det-related-card" onclick="openDetails(${e.node.id})">
+      <img class="det-related-cover" src="${e.node.coverImage?.medium||''}" onerror="this.style.background='var(--surface3)'">
+      <div class="det-related-info">
+        <div class="det-related-title">${e.node.title?.english||e.node.title?.romaji||'Unknown'}</div>
+        <div class="det-related-type">${typeLabel[e.relationType]||e.relationType}</div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function renderDetTrailer(media){
+  if(!media.trailer?.site==='youtube') return '<div style="color:var(--muted);font-size:.78rem">No trailer available.</div>';
+  return `<iframe class="det-trailer" src="https://www.youtube.com/embed/${media.trailer.id}" allowfullscreen loading="lazy"></iframe>`;
+}
+
+function closeDetails(){
+  document.getElementById('detailsBackdrop').classList.remove('open');
+  // Stop any playing trailer
+  const iframe = document.querySelector('.det-trailer');
+  if(iframe) iframe.src = iframe.src;
+}
+function closeDetailsOnBack(e){
+  if(e.target===document.getElementById('detailsBackdrop')) closeDetails();
+}
 </script>
 </body>
 </html>
