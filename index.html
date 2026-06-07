@@ -4702,11 +4702,10 @@ async function openDetails(id){
         studios(isMain:true){ nodes{ name siteUrl } }
         staff(perPage:8){ edges{ role node{ name{ full } image{ medium } siteUrl } } }
         characters(perPage:8,sort:ROLE){ edges{ role node{ name{ full } image{ medium } } } }
-        relations{ edges{ relationType(version:2) node{ id title{ romaji english } coverImage{ medium } type format } } }
+        relations{ edges{ relationType node{ id title{ romaji english } coverImage{ medium } type format } } }
         trailer{ id site }
         siteUrl
         nextAiringEpisode{ episode timeUntilAiring }
-        streamingEpisodes(page:1,perPage:1){ title thumbnail url }
       }
     }`;
     const d = await anilistQuery(query, {id: parseInt(id)});
@@ -4715,7 +4714,8 @@ async function openDetails(id){
     _detailsCache[id] = media;
     renderDetailsContent(media);
   } catch(e){
-    document.getElementById('detailsContent').innerHTML = `<div style="padding:2rem;color:var(--muted);font-family:'Space Mono',monospace">Failed to load details. Try again.</div>`;
+    delete _detailsCache[id]; // clear so retry works
+    document.getElementById('detailsContent').innerHTML = `<div style="padding:2rem;color:var(--muted);font-family:'Space Mono',monospace">Failed to load details — AniList may be unavailable. <button class="wl-btn primary" style="margin-top:.75rem" onclick="openDetails(${id})">Retry</button></div>`;
   }
 }
 
