@@ -1503,7 +1503,8 @@ nav{
     <div id="tabAiring" style="display:none">
       <div class="section-header" style="margin-bottom:.75rem">
         <div class="section-title">AIRING <span>CALENDAR</span></div>
-        <div style="display:flex;gap:.5rem">
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <button class="wl-btn secondary" id="airingFilterBtn" onclick="toggleAiringFilter()" title="Filter by status">👁 All Shows</button>
           <button class="wl-btn secondary" id="airingViewBtn" onclick="toggleAiringView()">📋 List View</button>
         </div>
       </div>
@@ -4503,14 +4504,23 @@ const _origRenderRecs = typeof renderRecs === 'function' ? renderRecs : null;
 /* ═══════════════════════════════════════
    AIRING CALENDAR
 ═══════════════════════════════════════ */
-let _airingCalendarView = true; // true = calendar, false = list
+let _airingCalendarView = true;
+let _airingWatchingOnly = false; // false = all shows, true = watching only
 
 function toggleAiringView(){
   _airingCalendarView = !_airingCalendarView;
   document.getElementById('airingCalendar').style.display = _airingCalendarView ? 'block' : 'none';
   document.getElementById('airingListView').style.display = _airingCalendarView ? 'none' : 'block';
   document.getElementById('airingViewBtn').textContent = _airingCalendarView ? '📋 List View' : '📅 Calendar View';
-  if(!_airingCalendarView) renderAiringList();
+  if(_airingCalendarView) renderAiringCalendar();
+  else renderAiringList();
+}
+
+function toggleAiringFilter(){
+  _airingWatchingOnly = !_airingWatchingOnly;
+  document.getElementById('airingFilterBtn').textContent = _airingWatchingOnly ? '👁 Watching Only' : '👁 All Shows';
+  if(_airingCalendarView) renderAiringCalendar();
+  else renderAiringList();
 }
 
 async function renderAiring(){
@@ -4525,14 +4535,15 @@ async function renderAiringCalendar(){
   const calWeek = document.getElementById('calWeek');
   const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const now = new Date();
-  const today = now.getDay(); // 0=Sun
+  const today = now.getDay();
 
-  // Build 7-day columns starting from today
+  // Build 7-day columns — Sunday first, correctly ordered from current day
+  // We want columns Sun Mon Tue Wed Thu Fri Sat but highlight today
   calWeek.innerHTML = days.map((d,i)=>{
     const offset = (i - today + 7) % 7;
     const date = new Date(now);
     date.setDate(now.getDate() + offset);
-    const isToday = offset === 0;
+    const isToday = i === today;
     const dd = date.getDate();
     const mm = date.toLocaleDateString('en-GB',{month:'short'});
     return `<div class="cal-day ${isToday?'today':''}" id="calDay-${i}">
@@ -4546,8 +4557,11 @@ async function renderAiringCalendar(){
     </div>`;
   }).join('');
 
-  // Fetch airing schedule from AniList for all tracked + watching shows
-  const tracked = animeList.filter(a=>a.status==='watching'||a.status==='planned'||a.status==='hold');
+  // Filter shows based on current filter setting
+  const tracked = _airingWatchingOnly
+    ? animeList.filter(a=>a.status==='watching')
+    : animeList.filter(a=>a.status!=='dropped');
+
   if(!tracked.length){
     days.forEach((_,i)=>{
       document.getElementById('calEntries-'+i).innerHTML = '<div class="cal-empty">—</div>';
@@ -4555,15 +4569,14 @@ async function renderAiringCalendar(){
     return;
   }
 
-  // Fetch airing data for tracked shows in batches
   const ids = tracked.map(a=>a.id);
   try{
+    // Only fetch nextAiringEpisode — ONE per show, no duplicates
     const query = `query($ids:[Int]){
       Page(perPage:50){
-        media(id_in:$ids,type:ANIME,status_in:[RELEASING,NOT_YET_RELEASED]){
+        media(id_in:$ids,type:ANIME){
           id
-          nextAiringEpisode{ episode timeUntilAiring airingAt }
-          airingSchedule(notYetAired:true,perPage:7){ nodes{ episode timeUntilAiring airingAt } }
+          nextAiringEpisode{ episode airingAt }
         }
       }
     }`;
@@ -4576,39 +4589,44 @@ async function renderAiringCalendar(){
       document.getElementById('calEntries-'+i).innerHTML = '';
     });
 
-    // Place episodes into the right day columns
+    // Place ONE entry per show in the correct day column
     tracked.forEach(a=>{
       const media = mediaMap[a.id];
-      if(!media) return;
-      const episodes = media.airingSchedule?.nodes || (media.nextAiringEpisode ? [media.nextAiringEpisode] : []);
-      episodes.forEach(ep=>{
-        if(!ep.airingAt) return;
-        const airingDate = new Date(ep.airingAt * 1000);
-        const airingDay = airingDate.getDay();
-        // Find which column this falls in (within next 7 days)
-        const offset = (airingDay - today + 7) % 7;
-        if(offset > 6) return;
-        const col = document.getElementById('calEntries-'+offset);
-        if(!col) return;
-        const timeStr = airingDate.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-        const entry = document.createElement('div');
-        entry.className = 'cal-entry';
-        entry.onclick = ()=>openDetails(a.id);
-        entry.innerHTML = `
-          <img class="cal-entry-cover" src="${a.cover||''}" onerror="this.style.background='var(--surface3)'">
-          <div class="cal-entry-info">
-            <div class="cal-entry-title">${a.title}</div>
-            <div class="cal-entry-ep">EP ${ep.episode}</div>
-            <div class="cal-entry-time">${timeStr}</div>
-          </div>`;
-        col.appendChild(entry);
-      });
+      const ep = media?.nextAiringEpisode;
+      if(!ep?.airingAt) return;
+
+      const airingDate = new Date(ep.airingAt * 1000);
+      const airingDay = airingDate.getDay(); // 0=Sun
+      const col = document.getElementById('calEntries-'+airingDay);
+      if(!col) return;
+
+      const timeStr = airingDate.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+      const entry = document.createElement('div');
+      entry.className = 'cal-entry';
+      entry.onclick = ()=>openDetails(a.id);
+      entry.innerHTML = `
+        <img class="cal-entry-cover" src="${a.cover||''}" onerror="this.style.background='var(--surface3)'">
+        <div class="cal-entry-info">
+          <div class="cal-entry-title">${a.title}</div>
+          <div class="cal-entry-ep">EP ${ep.episode}</div>
+          <div class="cal-entry-time">${timeStr}</div>
+        </div>`;
+      col.appendChild(entry);
     });
 
-    // Fill empty days
+    // Sort each column by air time
     days.forEach((_,i)=>{
       const col = document.getElementById('calEntries-'+i);
-      if(col && !col.children.length){
+      if(!col) return;
+      const entries = Array.from(col.querySelectorAll('.cal-entry'));
+      entries.sort((a,b)=>{
+        const ta = a.querySelector('.cal-entry-time')?.textContent||'';
+        const tb = b.querySelector('.cal-entry-time')?.textContent||'';
+        return ta.localeCompare(tb);
+      });
+      col.innerHTML = '';
+      entries.forEach(e=>col.appendChild(e));
+      if(!col.children.length){
         col.innerHTML = '<div class="cal-empty">Nothing airing</div>';
       }
     });
@@ -4623,8 +4641,10 @@ async function renderAiringCalendar(){
 }
 
 function renderAiringList(){
-  const tracked = animeList.filter(a=>a.status==='watching'||a.status==='hold');
-  document.getElementById('airingCount').textContent = tracked.length+' tracked';
+  const tracked = _airingWatchingOnly
+    ? animeList.filter(a=>a.status==='watching')
+    : animeList.filter(a=>a.status!=='dropped');
+  document.getElementById('airingCount').textContent = tracked.length+' shows';
   const grid = document.getElementById('airingGrid');
   if(!tracked.length){
     grid.innerHTML = '<div style="font-family:\'Space Mono\',monospace;font-size:.75rem;color:var(--muted);padding:2rem">No anime with Watching or On Hold status.</div>';
