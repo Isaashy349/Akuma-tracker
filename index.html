@@ -111,6 +111,26 @@ nav{
   padding:0 2rem;height:60px;
   background:rgba(5,5,15,.96);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
+  overflow:hidden;
+}
+/* Animated gradient behind logo */
+nav::before{
+  content:'';
+  position:absolute;left:0;top:0;
+  width:320px;height:100%;
+  background:linear-gradient(90deg,
+    rgba(232,0,61,.18) 0%,
+    rgba(123,47,255,.12) 40%,
+    transparent 100%);
+  background-size:200% 100%;
+  animation:navGlow 6s ease-in-out infinite alternate;
+  pointer-events:none;
+  z-index:0;
+}
+nav > *{ position:relative;z-index:1; }
+@keyframes navGlow{
+  0%{background-position:0% 50%;opacity:.7}
+  100%{background-position:100% 50%;opacity:1}
 }
 .logo{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.15em;flex-shrink:0}
 .logo span{color:var(--accent)}
@@ -679,6 +699,145 @@ nav{
 .theme-toggle-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;padding:.35rem .6rem;font-size:.75rem;transition:color .2s,border-color .2s;display:flex;align-items:center;gap:.35rem;font-family:'Space Mono',monospace;font-size:.6rem}
 .theme-toggle-btn:hover{color:var(--text);border-color:var(--accent)}
 
+/* ── LAYOUT TOGGLE ── */
+.layout-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:5px;width:26px;height:26px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s,background .15s}
+.layout-btn:hover{color:var(--text);border-color:var(--accent)}
+.layout-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ── LIST LAYOUT ── */
+.tracker-grid.layout-list{display:flex;flex-direction:column;gap:.6rem}
+.tracker-grid.layout-list .tracker-card{display:flex;flex-direction:row;border-radius:10px;height:100px}
+.tracker-grid.layout-list .card-cover-wrap{width:70px;height:100px;aspect-ratio:unset;flex-shrink:0}
+.tracker-grid.layout-list .card-info{flex:1;padding:.6rem .75rem;display:flex;flex-direction:column;justify-content:space-between}
+.tracker-grid.layout-list .card-title{font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-line-clamp:unset}
+.tracker-grid.layout-list .card-actions{position:static;transform:none!important;flex-direction:row;background:none;border-top:none;gap:.3rem;padding:0}
+.tracker-grid.layout-list .action-btn{padding:.3rem .5rem;font-size:.55rem;border-radius:4px;border:1px solid var(--border)}
+.tracker-grid.layout-list .prog-slider-wrap{display:none}
+.tracker-grid.layout-list .slider-ep-label{display:none}
+.tracker-grid.layout-list .status-ribbon{border-radius:3px;font-size:.45rem;top:.3rem;left:70px}
+
+/* ── COMPACT LAYOUT ── */
+.tracker-grid.layout-compact{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.5rem}
+.tracker-grid.layout-compact .tracker-card:hover{transform:translateY(-3px) scale(1.01)}
+.tracker-grid.layout-compact .card-info{padding:.45rem .5rem}
+.tracker-grid.layout-compact .card-title{font-size:.65rem}
+.tracker-grid.layout-compact .card-meta{font-size:.52rem}
+.tracker-grid.layout-compact .prog-slider-wrap{display:none}
+.tracker-grid.layout-compact .slider-ep-label{display:none}
+.tracker-grid.layout-compact .star{font-size:.6rem}
+.tracker-grid.layout-compact .rating-val{display:none}
+.tracker-grid.layout-compact .progress-section{margin:.2rem 0 .3rem}
+.tracker-grid.layout-compact select{font-size:.52rem;padding:.2rem .3rem}
+
+/* ── GLASSMORPHISM ── */
+.tracker-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;position:relative;
+  animation:fadeUp .35s cubic-bezier(.34,1.2,.64,1) both;
+  transition:transform .28s cubic-bezier(.34,1.2,.64,1),box-shadow .28s ease,border-color .28s ease;
+  backdrop-filter:blur(0px);
+}
+.tracker-card:hover{
+  transform:translateY(-6px) scale(1.01);
+  box-shadow:0 20px 44px rgba(0,0,0,.6),0 0 0 1px rgba(232,0,61,.25),0 0 20px rgba(232,0,61,.07);
+  border-color:rgba(232,0,61,.3);
+  backdrop-filter:blur(8px);
+}
+/* Glass overlay on cover hover */
+.card-cover-wrap::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(5,5,15,.95) 0%,rgba(5,5,15,.2) 50%,transparent 100%);
+  opacity:.6;transition:opacity .28s;
+  pointer-events:none;
+}
+.tracker-card:hover .card-cover-wrap::after{opacity:.85}
+
+/* ── HAMBURGER ── */
+.hamburger{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:.3rem;flex-shrink:0}
+.hamburger span{display:block;width:20px;height:2px;background:var(--muted);border-radius:1px;transition:transform .25s,opacity .25s,background .2s}
+.hamburger:hover span{background:var(--text)}
+.hamburger.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+/* ── MOBILE OVERLAY ── */
+.mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:190;backdrop-filter:blur(2px)}
+.mobile-overlay.show{display:block}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mobile-bottom-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(8,8,26,.97);backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  padding:0.5rem 0 env(safe-area-inset-bottom,0);
+  display:none;grid-template-columns:repeat(5,1fr);
+}
+.mob-nav-btn{
+  display:flex;flex-direction:column;align-items:center;gap:.2rem;
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  padding:.4rem .2rem;font-family:'Space Mono',monospace;font-size:.48rem;
+  transition:color .15s;
+}
+.mob-nav-btn.active{color:var(--accent)}
+.mob-nav-btn svg{transition:stroke .15s}
+.mob-nav-btn.active svg{stroke:var(--accent)}
+
+/* ── MOBILE RESPONSIVE ── */
+@media(max-width:860px){
+  /* Show hamburger, hide desktop tabs */
+  .hamburger{display:flex}
+  .nav-tabs{display:none}
+  nav{padding:0 1rem;gap:1rem}
+  .search-input{width:160px}
+  .search-input:focus{width:200px}
+
+  /* Sidebar slides in as drawer */
+  .sidebar{
+    position:fixed;left:0;top:60px;bottom:0;z-index:195;
+    transform:translateX(-100%);transition:transform .3s cubic-bezier(.34,1.1,.64,1);
+    width:240px;height:calc(100vh - 60px);
+  }
+  .sidebar.mobile-open{transform:translateX(0)}
+
+  /* Main content full width */
+  .app{flex-direction:column}
+  .main-content{width:100%;padding:1rem;padding-bottom:80px}
+
+  /* Grid adjusts */
+  .tracker-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.75rem}
+  .tracker-grid.layout-compact{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
+
+  /* Show bottom nav */
+  .mobile-bottom-nav{display:grid}
+
+  /* Stats/friends layout stack */
+  .stats-grid{grid-template-columns:1fr}
+  .friends-layout{grid-template-columns:1fr}
+  .watchlists-layout{grid-template-columns:1fr}
+  .cal-week{grid-template-columns:repeat(4,1fr)}
+  .cal-day:last-child{display:none}
+  .cal-day:nth-child(6){display:none}
+  .cal-day:nth-child(5){display:none}
+
+  /* Season modal full width */
+  .season-modal-box{width:95vw;max-height:90vh}
+  .fp-compare-grid{grid-template-columns:1fr}
+  .fp-compare-col:not(:first-child){display:none}
+
+  /* Hide theme toggle label */
+  .theme-toggle-btn span{display:none}
+}
+
+@media(max-width:480px){
+  .tracker-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.5rem}
+  .tracker-grid.layout-list .tracker-card{height:88px}
+  .tracker-grid.layout-list .card-cover-wrap{width:60px;height:88px}
+  .det-hero{flex-direction:column;align-items:flex-start;margin-top:-40px}
+  .det-cover{width:80px;height:115px}
+  .det-stats{grid-template-columns:repeat(2,1fr)}
+  .profile-stats-strip{grid-template-columns:repeat(3,1fr)}
+}
+
 /* ── FRIENDS TAB ── */
 .friends-layout{display:grid;grid-template-columns:320px 1fr;gap:1.5rem}
 .friends-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem}
@@ -1225,6 +1384,9 @@ nav{
 
 <!-- NAV -->
 <nav>
+  <button class="hamburger" id="hamburger" onclick="toggleMobileSidebar()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
   <div class="logo">AK<span>U</span>MA</div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="switchTab('list',this)">My List</button>
@@ -1469,6 +1631,11 @@ nav{
         <div class="filter-pill" onclick="sortList('score',this)">My Score</div>
         <div class="filter-pill" onclick="sortList('progress',this)">Progress</div>
         <div class="filter-pill" onclick="sortList('aniScore',this)">AniList Score</div>
+        <div style="margin-left:auto;display:flex;gap:.3rem">
+          <button class="layout-btn active" id="layoutGrid" onclick="setLayout('grid',this)" title="Grid">⊞</button>
+          <button class="layout-btn" id="layoutList" onclick="setLayout('list',this)" title="List">☰</button>
+          <button class="layout-btn" id="layoutCompact" onclick="setLayout('compact',this)" title="Compact">▦</button>
+        </div>
       </div>
       <div class="tracker-grid" id="trackerGrid"></div>
     </div>
@@ -1572,6 +1739,33 @@ nav{
 
   </main>
 </div>
+<!-- Mobile sidebar overlay -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileSidebar()"></div>
+
+<!-- Mobile bottom navigation -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+  <button class="mob-nav-btn active" onclick="switchTab('list',this);setMobileTab(this)">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span>List</span>
+  </button>
+  <button class="mob-nav-btn" onclick="switchTab('watch',this);setMobileTab(this)">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    <span>Watch</span>
+  </button>
+  <button class="mob-nav-btn" onclick="switchTab('airing',this);setMobileTab(this)">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span>Airing</span>
+  </button>
+  <button class="mob-nav-btn" onclick="switchTab('friends',this);setMobileTab(this)">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <span>Friends</span>
+  </button>
+  <button class="mob-nav-btn" onclick="openProfileModal();setMobileTab(this)">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Profile</span>
+  </button>
+</nav>
+
 </div><!-- end appShell -->
 
 <!-- SEASON STACK MODAL -->
@@ -1630,6 +1824,7 @@ let animeList    = [];
 let notifications= [];
 let currentFilter= 'all';
 let currentSort  = 'added';
+let currentLayout= localStorage.getItem('akuma_layout')||'grid';
 let modalId      = null;
 let notifOpen    = false;
 
@@ -2717,6 +2912,7 @@ function renderSingleCard(a, i){
 
 function renderGrid(){
   const grid=document.getElementById('trackerGrid');
+  grid.className = 'tracker-grid layout-'+currentLayout;
   const list=getFiltered();
   const fn=(currentFilter==='all'?'ALL ANIME':STATUS_LABELS[currentFilter]?.toUpperCase()||currentFilter.toUpperCase()).split(' ');
   document.getElementById('listTitle').innerHTML=fn.length>1?`${fn.slice(0,-1).join(' ')} <span>${fn[fn.length-1]}</span>`:`<span>${fn[0]}</span>`;
@@ -4498,6 +4694,61 @@ function renderMutualRecsGrid(list){
   }).join('');
 }
 
+/* ═══════════════════════════════════════
+   LAYOUT TOGGLE
+═══════════════════════════════════════ */
+function setLayout(layout, btn){
+  currentLayout = layout;
+  localStorage.setItem('akuma_layout', layout);
+  document.querySelectorAll('.layout-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+// Restore layout on boot
+(function initLayout(){
+  const saved = localStorage.getItem('akuma_layout')||'grid';
+  currentLayout = saved;
+  const btn = document.getElementById('layout'+saved.charAt(0).toUpperCase()+saved.slice(1));
+  if(btn){
+    document.querySelectorAll('.layout-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+})();
+
+/* ═══════════════════════════════════════
+   MOBILE
+═══════════════════════════════════════ */
+function toggleMobileSidebar(){
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('mobileOverlay');
+  const ham = document.getElementById('hamburger');
+  const isOpen = sidebar.classList.contains('mobile-open');
+  sidebar.classList.toggle('mobile-open', !isOpen);
+  overlay.classList.toggle('show', !isOpen);
+  ham.classList.toggle('open', !isOpen);
+}
+
+function setMobileTab(btn){
+  document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  // Close sidebar if open on mobile
+  const sidebar = document.querySelector('.sidebar');
+  if(sidebar.classList.contains('mobile-open')) toggleMobileSidebar();
+}
+
+// Close mobile sidebar when a status filter is clicked
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.status-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const sidebar = document.querySelector('.sidebar');
+      if(window.innerWidth<=860 && sidebar.classList.contains('mobile-open')){
+        toggleMobileSidebar();
+      }
+    });
+  });
+});
+
 // Hook into renderRecs/renderCategories to also load mutual recs
 const _origRenderRecs = typeof renderRecs === 'function' ? renderRecs : null;
 
@@ -4678,6 +4929,7 @@ let _detailsCache = {}; // cache fetched details by id
 
 async function openDetails(id){
   document.getElementById('detailsBackdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
   document.getElementById('detailsContent').innerHTML = `
     <div class="det-banner"><div class="det-banner-grad"></div></div>
     <div style="padding:1.5rem;color:var(--muted);font-family:'Space Mono',monospace;font-size:.75rem">Loading…</div>`;
@@ -4855,6 +5107,7 @@ function renderDetTrailer(media){
 
 function closeDetails(){
   document.getElementById('detailsBackdrop').classList.remove('open');
+  document.body.style.overflow = '';
   // Stop any playing trailer
   const iframe = document.querySelector('.det-trailer');
   if(iframe) iframe.src = iframe.src;
