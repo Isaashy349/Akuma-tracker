@@ -705,29 +705,45 @@ nav > *{ position:relative;z-index:1; }
 .layout-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
 /* ── LIST LAYOUT ── */
-.tracker-grid.layout-list{display:flex;flex-direction:column;gap:.6rem}
-.tracker-grid.layout-list .tracker-card{display:flex;flex-direction:row;border-radius:10px;height:100px}
-.tracker-grid.layout-list .card-cover-wrap{width:70px;height:100px;aspect-ratio:unset;flex-shrink:0}
-.tracker-grid.layout-list .card-info{flex:1;padding:.6rem .75rem;display:flex;flex-direction:column;justify-content:space-between}
-.tracker-grid.layout-list .card-title{font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-line-clamp:unset}
-.tracker-grid.layout-list .card-actions{position:static;transform:none!important;flex-direction:row;background:none;border-top:none;gap:.3rem;padding:0}
-.tracker-grid.layout-list .action-btn{padding:.3rem .5rem;font-size:.55rem;border-radius:4px;border:1px solid var(--border)}
+.tracker-grid.layout-list{display:flex;flex-direction:column;gap:.5rem}
+.tracker-grid.layout-list .tracker-card{
+  display:grid;grid-template-columns:70px 1fr;
+  border-radius:8px;height:88px;overflow:hidden;
+}
+.tracker-grid.layout-list .card-cover-wrap{width:70px;height:88px;aspect-ratio:unset;flex-shrink:0}
+.tracker-grid.layout-list .card-info{padding:.5rem .65rem;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.tracker-grid.layout-list .card-title{font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-line-clamp:unset;-webkit-box-orient:unset;display:block}
+.tracker-grid.layout-list .card-meta{font-size:.6rem}
+.tracker-grid.layout-list .card-actions{position:static;transform:none!important;flex-direction:row;background:none;border-top:none;gap:.25rem;padding:0;opacity:1}
+.tracker-grid.layout-list .action-btn{padding:.25rem .45rem;font-size:.52rem;border-radius:4px;border:1px solid var(--border);flex-direction:row;gap:.2rem}
 .tracker-grid.layout-list .prog-slider-wrap{display:none}
 .tracker-grid.layout-list .slider-ep-label{display:none}
-.tracker-grid.layout-list .status-ribbon{border-radius:3px;font-size:.45rem;top:.3rem;left:70px}
-
+.tracker-grid.layout-list .progress-section{margin:.25rem 0}
+.tracker-grid.layout-list .status-ribbon{top:.3rem;left:0}
+.tracker-grid.layout-list .rating-section{display:none}
+/* Series stack in list mode — compact row */
+.tracker-grid.layout-list .series-stack{
+  display:grid;grid-template-columns:70px 1fr;
+  border-radius:8px;height:88px;overflow:hidden;
+  animation:fadeUp .35s cubic-bezier(.34,1.2,.64,1) both;
+}
+.tracker-grid.layout-list .series-stack .stack-front{display:contents}
+.tracker-grid.layout-list .series-stack .card-cover-wrap{width:70px;height:88px;aspect-ratio:unset}
+.tracker-grid.layout-list .series-stack .card-info{padding:.5rem .65rem;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.tracker-grid.layout-list .series-stack .stack-ghost-1,
+.tracker-grid.layout-list .series-stack .stack-ghost-2{display:none}
 /* ── COMPACT LAYOUT ── */
-.tracker-grid.layout-compact{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.5rem}
+.tracker-grid.layout-compact{grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:.5rem}
 .tracker-grid.layout-compact .tracker-card:hover{transform:translateY(-3px) scale(1.01)}
-.tracker-grid.layout-compact .card-info{padding:.45rem .5rem}
-.tracker-grid.layout-compact .card-title{font-size:.65rem}
-.tracker-grid.layout-compact .card-meta{font-size:.52rem}
+.tracker-grid.layout-compact .card-info{padding:.4rem .45rem}
+.tracker-grid.layout-compact .card-title{font-size:.62rem}
+.tracker-grid.layout-compact .card-meta{font-size:.5rem}
 .tracker-grid.layout-compact .prog-slider-wrap{display:none}
 .tracker-grid.layout-compact .slider-ep-label{display:none}
 .tracker-grid.layout-compact .star{font-size:.6rem}
 .tracker-grid.layout-compact .rating-val{display:none}
-.tracker-grid.layout-compact .progress-section{margin:.2rem 0 .3rem}
-.tracker-grid.layout-compact select{font-size:.52rem;padding:.2rem .3rem}
+.tracker-grid.layout-compact .progress-section{margin:.2rem 0 .25rem}
+.tracker-grid.layout-compact select{font-size:.5rem;padding:.18rem .25rem}
 
 /* ── GLASSMORPHISM ── */
 .tracker-card{
