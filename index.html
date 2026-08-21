@@ -709,6 +709,9 @@ nav > *{ position:relative;z-index:1; }
   display:flex;flex-direction:column;gap:.5rem;
   width:100%;box-sizing:border-box;
 }
+.tracker-grid.layout-list .tracker-card{
+  width:100%!important;box-sizing:border-box!important;
+}
 /* ── COMPACT LAYOUT ── */
 .tracker-grid.layout-compact{
   grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.45rem;
@@ -2561,15 +2564,18 @@ function renderStackCard(seriesEntry, idx){
 
   // Simplified list row for list layout
   if(currentLayout==='list'){
-    return `<div class="tracker-card" style="animation-delay:${Math.min(idx,20)*0.032}s;display:flex;flex-direction:row;height:80px;overflow:hidden;border-radius:8px;cursor:pointer" onclick="openSeasonModal(${JSON.stringify(seriesEntry.ids).replace(/"/g,'&quot;')})">
-      <div style="position:relative;width:56px;min-width:56px;height:80px;flex-shrink:0;overflow:hidden">
-        <img src="${front.cover||''}" style="width:100%;height:100%;object-fit:cover">
-        <div style="position:absolute;top:.25rem;left:0;background:var(--accent);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:.55rem;padding:.1rem .35rem;letter-spacing:.04em">${count} S</div>
+    return `<div class="tracker-card" style="animation-delay:${Math.min(idx,20)*0.032}s;display:flex;flex-direction:row;height:90px;width:100%;box-sizing:border-box;overflow:hidden;border-radius:8px;cursor:pointer" onclick="openSeasonModal(${JSON.stringify(seriesEntry.ids).replace(/"/g,'&quot;')})">
+      <div style="position:relative;width:64px;min-width:64px;height:90px;flex-shrink:0;overflow:hidden">
+        <img src="${front.cover||''}" style="width:100%;height:100%;object-fit:cover;display:block">
+        <div style="position:absolute;top:.25rem;left:0;background:var(--accent);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:.55rem;padding:.1rem .4rem;letter-spacing:.04em">${count} S</div>
       </div>
-      <div style="flex:1;min-width:0;padding:.45rem .6rem;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
-        <div style="font-size:.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${front.title}</div>
-        <div style="font-size:.58rem;color:var(--muted)">${count} seasons · ${totalEps} eps${overallScore?` · ★${overallScore}`:''}</div>
-        <div style="font-size:.55rem;color:var(--muted);font-family:'Space Mono',monospace">${statusLabel} · ${animes.filter(a=>a.myScore>0).length}/${count} rated</div>
+      <div style="flex:1;min-width:0;padding:.55rem .8rem;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem">
+          <div style="font-size:.85rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1">${front.title}</div>
+          ${overallScore?`<span style="font-family:'Space Mono',monospace;font-size:.6rem;color:var(--accent3);flex-shrink:0">★${overallScore}</span>`:''}
+        </div>
+        <div style="font-size:.62rem;color:var(--muted)">${count} seasons · ${totalEps} eps · ${statusLabel}</div>
+        <div style="font-size:.58rem;color:var(--muted);font-family:'Space Mono',monospace">${animes.filter(a=>a.myScore>0).length}/${count} rated · tap to view seasons</div>
       </div>
     </div>`;
   }
@@ -2861,23 +2867,26 @@ function renderSingleCard(a, i){
     // Simplified list-row HTML
     if(currentLayout==='list'){
       const pct=a.episodes?Math.round(a.progress/a.episodes*100):0;
-      return `<div class="tracker-card list-row" style="animation-delay:${Math.min(i,20)*0.032}s;display:flex;flex-direction:row;height:80px;overflow:hidden;border-radius:8px">
-        <div class="card-cover-wrap" onclick="openDetails(${a.id})" style="cursor:pointer;width:56px;min-width:56px;height:80px;aspect-ratio:unset;flex-shrink:0;overflow:hidden;position:relative">
-          <img class="card-cover" src="${a.cover||''}" alt="${a.title}" style="width:100%;height:100%;object-fit:cover">
-          <span class="status-ribbon s-${a.status}" style="font-size:.38rem">${STATUS_LABELS[a.status]}</span>
+      return `<div class="tracker-card list-row" style="animation-delay:${Math.min(i,20)*0.032}s;display:flex;flex-direction:row;height:90px;width:100%;box-sizing:border-box;overflow:hidden;border-radius:8px">
+        <div onclick="openDetails(${a.id})" style="cursor:pointer;width:64px;min-width:64px;height:90px;flex-shrink:0;overflow:hidden;position:relative">
+          <img src="${a.cover||''}" alt="${a.title}" style="width:100%;height:100%;object-fit:cover;display:block">
+          <span class="status-ribbon s-${a.status}" style="font-size:.38rem;padding:.1rem .35rem">${STATUS_LABELS[a.status]}</span>
         </div>
-        <div style="flex:1;min-width:0;padding:.45rem .6rem;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
-          <div style="font-size:.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.title}</div>
-          <div style="font-size:.58rem;color:var(--muted)">${a.year||''} · ${a.episodes||'?'} eps${a.myScore?` · ★${a.myScore}`:''}</div>
-          <div style="display:flex;align-items:center;gap:.4rem">
-            <span style="font-family:'Space Mono',monospace;font-size:.55rem;color:var(--muted)">EP ${a.progress}/${a.episodes||'?'}</span>
+        <div style="flex:1;min-width:0;padding:.55rem .8rem;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem">
+            <div style="font-size:.85rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1">${a.title}</div>
+            ${a.myScore?`<span style="font-family:'Space Mono',monospace;font-size:.6rem;color:var(--accent3);flex-shrink:0">★${a.myScore}</span>`:''}
+          </div>
+          <div style="font-size:.62rem;color:var(--muted)">${a.year||''} · ${a.episodes||'?'} eps · ${STATUS_LABELS[a.status]||a.status}</div>
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <span style="font-family:'Space Mono',monospace;font-size:.58rem;color:var(--muted);white-space:nowrap">EP ${a.progress}/${a.episodes||'?'}</span>
             <div style="flex:1;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden">
               <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:2px"></div>
             </div>
           </div>
-          <div style="display:flex;gap:.3rem">
-            <button style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--muted);padding:.18rem .4rem;font-size:.5rem;cursor:pointer;font-family:'Space Mono',monospace" onclick="event.stopPropagation();openModal(${a.id})">Edit</button>
-            <button style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--muted);padding:.18rem .4rem;font-size:.5rem;cursor:pointer;font-family:'Space Mono',monospace" onclick="event.stopPropagation();quickProgress(${a.id},1)">+1 Ep</button>
+          <div style="display:flex;gap:.35rem">
+            <button style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--muted);padding:.22rem .55rem;font-size:.55rem;cursor:pointer;font-family:'Space Mono',monospace;transition:border-color .15s" onclick="event.stopPropagation();openModal(${a.id})">Edit</button>
+            <button style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--muted);padding:.22rem .55rem;font-size:.55rem;cursor:pointer;font-family:'Space Mono',monospace;transition:border-color .15s" onclick="event.stopPropagation();quickProgress(${a.id},1)">+1 Ep</button>
           </div>
         </div>
       </div>`;
