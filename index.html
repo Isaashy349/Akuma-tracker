@@ -709,61 +709,6 @@ nav > *{ position:relative;z-index:1; }
   display:flex;flex-direction:column;gap:.5rem;
   width:100%;box-sizing:border-box;
 }
-.tracker-grid.layout-list .tracker-card,
-.tracker-grid.layout-list .series-stack{
-  width:100%;max-width:100%;box-sizing:border-box;
-  display:flex;flex-direction:row;
-  border-radius:8px;height:88px;overflow:hidden;
-  animation:fadeUp .35s cubic-bezier(.34,1.2,.64,1) both;
-}
-/* Cover */
-.tracker-grid.layout-list .card-cover-wrap,
-.tracker-grid.layout-list .series-stack .card-cover-wrap{
-  width:64px;min-width:64px;height:88px;
-  aspect-ratio:unset;flex-shrink:0;overflow:hidden;
-}
-/* Info area */
-.tracker-grid.layout-list .card-info,
-.tracker-grid.layout-list .series-stack .card-info{
-  flex:1;min-width:0;
-  padding:.45rem .6rem;
-  display:flex;flex-direction:column;
-  justify-content:space-between;
-  overflow:hidden;
-}
-.tracker-grid.layout-list .card-title{
-  font-size:.78rem;font-weight:700;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  display:block;-webkit-line-clamp:unset;
-}
-.tracker-grid.layout-list .card-meta{font-size:.58rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* Hide heavy elements in list mode */
-.tracker-grid.layout-list .prog-slider-wrap,
-.tracker-grid.layout-list .slider-ep-label,
-.tracker-grid.layout-list .rating-section,
-.tracker-grid.layout-list select{display:none}
-.tracker-grid.layout-list .progress-section{margin:.2rem 0}
-/* Actions row */
-.tracker-grid.layout-list .card-actions{
-  position:static;transform:none!important;
-  flex-direction:row;background:none;border-top:none;
-  gap:.2rem;padding:0;opacity:1;justify-content:flex-start;
-}
-.tracker-grid.layout-list .action-btn{
-  padding:.2rem .4rem;font-size:.5rem;
-  border-radius:4px;border:1px solid var(--border);
-  flex-direction:row;gap:.15rem;
-}
-/* Season stack in list mode — show stack-front as a row, hide ghosts */
-.tracker-grid.layout-list .series-stack{cursor:pointer}
-.tracker-grid.layout-list .stack-ghost-1,
-.tracker-grid.layout-list .stack-ghost-2{display:none!important}
-.tracker-grid.layout-list .series-stack .stack-front{
-  display:flex;flex-direction:row;width:100%;height:88px;
-}
-/* Status ribbon */
-.tracker-grid.layout-list .status-ribbon{top:.25rem;left:0;font-size:.42rem}
-
 /* ── COMPACT LAYOUT ── */
 .tracker-grid.layout-compact{
   grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.45rem;
@@ -2613,6 +2558,21 @@ function renderStackCard(seriesEntry, idx){
   const someWatching = animes.some(a=>a.status==='watching');
   const statusLabel = allComplete?'Completed':someWatching?'Watching':'Mixed';
   const statusClass = allComplete?'completed':someWatching?'watching':'planned';
+
+  // Simplified list row for list layout
+  if(currentLayout==='list'){
+    return `<div class="tracker-card" style="animation-delay:${Math.min(idx,20)*0.032}s;display:flex;flex-direction:row;height:80px;overflow:hidden;border-radius:8px;cursor:pointer" onclick="openSeasonModal(${JSON.stringify(seriesEntry.ids).replace(/"/g,'&quot;')})">
+      <div style="position:relative;width:56px;min-width:56px;height:80px;flex-shrink:0;overflow:hidden">
+        <img src="${front.cover||''}" style="width:100%;height:100%;object-fit:cover">
+        <div style="position:absolute;top:.25rem;left:0;background:var(--accent);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:.55rem;padding:.1rem .35rem;letter-spacing:.04em">${count} S</div>
+      </div>
+      <div style="flex:1;min-width:0;padding:.45rem .6rem;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
+        <div style="font-size:.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${front.title}</div>
+        <div style="font-size:.58rem;color:var(--muted)">${count} seasons · ${totalEps} eps${overallScore?` · ★${overallScore}`:''}</div>
+        <div style="font-size:.55rem;color:var(--muted);font-family:'Space Mono',monospace">${statusLabel} · ${animes.filter(a=>a.myScore>0).length}/${count} rated</div>
+      </div>
+    </div>`;
+  }
   const pct = overallScore ? Math.round((overallScore/10)*100) : 0;
   const circ = 94.25; // 2*pi*15
   const offset = overallScore ? circ-(circ*overallScore/10) : circ;
@@ -2898,6 +2858,30 @@ function getFiltered(){
 // renderSingleCard defined below
 
 function renderSingleCard(a, i){
+    // Simplified list-row HTML
+    if(currentLayout==='list'){
+      const pct=a.episodes?Math.round(a.progress/a.episodes*100):0;
+      return `<div class="tracker-card list-row" style="animation-delay:${Math.min(i,20)*0.032}s;display:flex;flex-direction:row;height:80px;overflow:hidden;border-radius:8px">
+        <div class="card-cover-wrap" onclick="openDetails(${a.id})" style="cursor:pointer;width:56px;min-width:56px;height:80px;aspect-ratio:unset;flex-shrink:0;overflow:hidden;position:relative">
+          <img class="card-cover" src="${a.cover||''}" alt="${a.title}" style="width:100%;height:100%;object-fit:cover">
+          <span class="status-ribbon s-${a.status}" style="font-size:.38rem">${STATUS_LABELS[a.status]}</span>
+        </div>
+        <div style="flex:1;min-width:0;padding:.45rem .6rem;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
+          <div style="font-size:.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.title}</div>
+          <div style="font-size:.58rem;color:var(--muted)">${a.year||''} · ${a.episodes||'?'} eps${a.myScore?` · ★${a.myScore}`:''}</div>
+          <div style="display:flex;align-items:center;gap:.4rem">
+            <span style="font-family:'Space Mono',monospace;font-size:.55rem;color:var(--muted)">EP ${a.progress}/${a.episodes||'?'}</span>
+            <div style="flex:1;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:2px"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:.3rem">
+            <button style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--muted);padding:.18rem .4rem;font-size:.5rem;cursor:pointer;font-family:'Space Mono',monospace" onclick="event.stopPropagation();openModal(${a.id})">Edit</button>
+            <button style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--muted);padding:.18rem .4rem;font-size:.5rem;cursor:pointer;font-family:'Space Mono',monospace" onclick="event.stopPropagation();quickProgress(${a.id},1)">+1 Ep</button>
+          </div>
+        </div>
+      </div>`;
+    }
     const pct=a.episodes?Math.round(a.progress/a.episodes*100):0;
     // 10 stars in two rows of 5
     const starsTop=[1,2,3,4,5].map(n=>`<span class="star ${a.myScore>=n?'lit':''}" onclick="quickRate(${a.id},${n})" title="${n}">★</span>`).join('');
